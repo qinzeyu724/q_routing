@@ -136,6 +136,7 @@ control MyIngress(inout headers hdr,
     
     register<bit<48>>(8) q_value;
     register<bit<4>>(1) packet_count;
+    register<bit<16>>(8) port_count;
     register<bit<48>>(64) ingress_global_timestamp;
     register<bit<48>>(64) ret_timestamp;
     register<bit<48>>(64) time;
@@ -143,6 +144,7 @@ control MyIngress(inout headers hdr,
 
     bit<4> count_temp;
     bit<4> count_temp2;
+    bit<16> count_temp3;
     bit<48> q_value_temp;
     bit<48> q_value_temp1;
     bit<48> q_value_temp2;
@@ -184,6 +186,9 @@ control MyIngress(inout headers hdr,
         }
         count_temp = count_temp + 1;
         packet_count.write((bit<32>)0,count_temp);
+        port_count.read(count_temp3,(bit<32>)standard_metadata.egress_spec);
+        count_temp3 = count_temp3+1;
+        port_count.write((bit<32>)standard_metadata.egress_spec,count_temp3);
 
     }
 

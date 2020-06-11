@@ -13,13 +13,16 @@
         ["tmp_0", 32, false],
         ["tmp_1", 32, false],
         ["tmp_2", 32, false],
-        ["tmp_3", 48, false],
+        ["tmp_3", 32, false],
         ["tmp_4", 32, false],
         ["tmp_5", 48, false],
         ["tmp_6", 32, false],
-        ["tmp_7", 32, false],
+        ["tmp_7", 48, false],
+        ["tmp_8", 32, false],
+        ["tmp_9", 32, false],
         ["count_temp", 4, false],
         ["count_temp2", 4, false],
+        ["count_temp3", 16, false],
         ["q_value_temp", 48, false],
         ["q2", 48, false],
         ["q3", 48, false],
@@ -316,7 +319,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "qlearning_source.p4",
-        "line" : 291,
+        "line" : 296,
         "column" : 8,
         "source_fragment" : "MyDeparser"
       },
@@ -351,11 +354,23 @@
       "bitwidth" : 4
     },
     {
-      "name" : "MyIngress.ingress_global_timestamp",
+      "name" : "MyIngress.port_count",
       "id" : 2,
       "source_info" : {
         "filename" : "qlearning_source.p4",
         "line" : 139,
+        "column" : 25,
+        "source_fragment" : "port_count"
+      },
+      "size" : 8,
+      "bitwidth" : 16
+    },
+    {
+      "name" : "MyIngress.ingress_global_timestamp",
+      "id" : 3,
+      "source_info" : {
+        "filename" : "qlearning_source.p4",
+        "line" : 140,
         "column" : 26,
         "source_fragment" : "ingress_global_timestamp"
       },
@@ -364,10 +379,10 @@
     },
     {
       "name" : "MyIngress.ret_timestamp",
-      "id" : 3,
+      "id" : 4,
       "source_info" : {
         "filename" : "qlearning_source.p4",
-        "line" : 140,
+        "line" : 141,
         "column" : 26,
         "source_fragment" : "ret_timestamp"
       },
@@ -376,10 +391,10 @@
     },
     {
       "name" : "MyIngress.time",
-      "id" : 4,
+      "id" : 5,
       "source_info" : {
         "filename" : "qlearning_source.p4",
-        "line" : 141,
+        "line" : 142,
         "column" : 26,
         "source_fragment" : "time"
       },
@@ -388,10 +403,10 @@
     },
     {
       "name" : "MyIngress.reward_array",
-      "id" : 5,
+      "id" : 6,
       "source_info" : {
         "filename" : "qlearning_source.p4",
-        "line" : 142,
+        "line" : 143,
         "column" : 26,
         "source_fragment" : "reward_array"
       },
@@ -405,7 +420,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "qlearning_source.p4",
-        "line" : 269,
+        "line" : 274,
         "column" : 1,
         "source_fragment" : "update_checksum( ..."
       },
@@ -476,7 +491,7 @@
           "parameters" : [],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 155,
+            "line" : 157,
             "column" : 8,
             "source_fragment" : "mark_to_drop()"
           }
@@ -511,7 +526,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 159,
+            "line" : 161,
             "column" : 8,
             "source_fragment" : "standard_metadata.egress_spec = port"
           }
@@ -530,7 +545,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 160,
+            "line" : 162,
             "column" : 8,
             "source_fragment" : "hdr.ethernet.srcAddr = hdr.ethernet.dstAddr"
           }
@@ -549,7 +564,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 161,
+            "line" : 163,
             "column" : 8,
             "source_fragment" : "hdr.ethernet.dstAddr = dstAddr"
           }
@@ -591,7 +606,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 162,
+            "line" : 164,
             "column" : 8,
             "source_fragment" : "hdr.ipv4.ttl = hdr.ipv4.ttl - 1"
           }
@@ -621,7 +636,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 166,
+            "line" : 168,
             "column" : 8,
             "source_fragment" : "packet_count.read(count_temp,(bit<32>)0)"
           }
@@ -644,7 +659,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 167,
+            "line" : 169,
             "column" : 8,
             "source_fragment" : "q_value.read(q2,(bit<32>)2)"
           }
@@ -667,7 +682,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 168,
+            "line" : 170,
             "column" : 8,
             "source_fragment" : "q_value.read(q3,(bit<32>)3)"
           }
@@ -690,7 +705,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 169,
+            "line" : 171,
             "column" : 8,
             "source_fragment" : "q_value.read(q4,(bit<32>)4)"
           }
@@ -736,7 +751,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 171,
+            "line" : 173,
             "column" : 12,
             "source_fragment" : "standard_metadata.egress_spec ="
           }
@@ -809,7 +824,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 173,
+            "line" : 175,
             "column" : 12,
             "source_fragment" : "standard_metadata.egress_spec ="
           }
@@ -909,7 +924,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 175,
+            "line" : 177,
             "column" : 12,
             "source_fragment" : "standard_metadata.egress_spec ="
           }
@@ -1056,7 +1071,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 178,
+            "line" : 180,
             "column" : 16,
             "source_fragment" : "standard_metadata.egress_spec ="
           }
@@ -1250,7 +1265,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 180,
+            "line" : 182,
             "column" : 16,
             "source_fragment" : "standard_metadata.egress_spec ="
           }
@@ -1451,7 +1466,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 182,
+            "line" : 184,
             "column" : 16,
             "source_fragment" : "standard_metadata.egress_spec ="
           }
@@ -1493,7 +1508,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 185,
+            "line" : 187,
             "column" : 8,
             "source_fragment" : "count_temp = count_temp + 1"
           }
@@ -1516,9 +1531,149 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 186,
+            "line" : 188,
             "column" : 8,
             "source_fragment" : "packet_count.write((bit<32>)0,count_temp)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_0"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "field",
+                    "value" : ["standard_metadata", "egress_spec"]
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffff"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "op" : "register_read",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "count_temp3"]
+            },
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.port_count"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_0"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "qlearning_source.p4",
+            "line" : 189,
+            "column" : 8,
+            "source_fragment" : "port_count.read(count_temp3,(bit<32>)standard_metadata.egress_spec)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "count_temp3"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "+",
+                      "left" : {
+                        "type" : "field",
+                        "value" : ["scalars", "count_temp3"]
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0001"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "qlearning_source.p4",
+            "line" : 190,
+            "column" : 8,
+            "source_fragment" : "count_temp3 = count_temp3+1"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_1"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "field",
+                    "value" : ["standard_metadata", "egress_spec"]
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffff"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.port_count"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_1"]
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "count_temp3"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "qlearning_source.p4",
+            "line" : 191,
+            "column" : 8,
+            "source_fragment" : "port_count.write((bit<32>)standard_metadata.egress_spec,count_temp3)"
           }
         }
       ]
@@ -1546,107 +1701,9 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 219,
+            "line" : 224,
             "column" : 12,
             "source_fragment" : "packet_count.read(count_temp2,(bit<32>)0)"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_0"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["scalars", "count_temp2"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffff"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "op" : "register_write",
-          "parameters" : [
-            {
-              "type" : "register_array",
-              "value" : "MyIngress.ingress_global_timestamp"
-            },
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_0"]
-            },
-            {
-              "type" : "field",
-              "value" : ["q_header", "ingress_global_timestamp"]
-            }
-          ],
-          "source_info" : {
-            "filename" : "qlearning_source.p4",
-            "line" : 220,
-            "column" : 12,
-            "source_fragment" : "ingress_global_timestamp.write((bit<32>)count_temp2, hdr.q_header.ingress_global_timestamp)"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_1"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["scalars", "count_temp2"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffff"
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "op" : "register_write",
-          "parameters" : [
-            {
-              "type" : "register_array",
-              "value" : "MyIngress.ret_timestamp"
-            },
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_1"]
-            },
-            {
-              "type" : "field",
-              "value" : ["standard_metadata", "ingress_global_timestamp"]
-            }
-          ],
-          "source_info" : {
-            "filename" : "qlearning_source.p4",
-            "line" : 221,
-            "column" : 12,
-            "source_fragment" : "ret_timestamp.write((bit<32>)count_temp2, standard_metadata.ingress_global_timestamp)"
           }
         },
         {
@@ -1676,11 +1733,109 @@
           ]
         },
         {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.ingress_global_timestamp"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_2"]
+            },
+            {
+              "type" : "field",
+              "value" : ["q_header", "ingress_global_timestamp"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "qlearning_source.p4",
+            "line" : 225,
+            "column" : 12,
+            "source_fragment" : "ingress_global_timestamp.write((bit<32>)count_temp2, hdr.q_header.ingress_global_timestamp)"
+          }
+        },
+        {
           "op" : "assign",
           "parameters" : [
             {
               "type" : "field",
               "value" : ["scalars", "tmp_3"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "field",
+                    "value" : ["scalars", "count_temp2"]
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffff"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "MyIngress.ret_timestamp"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_3"]
+            },
+            {
+              "type" : "field",
+              "value" : ["standard_metadata", "ingress_global_timestamp"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "qlearning_source.p4",
+            "line" : 226,
+            "column" : 12,
+            "source_fragment" : "ret_timestamp.write((bit<32>)count_temp2, standard_metadata.ingress_global_timestamp)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_4"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "field",
+                    "value" : ["scalars", "count_temp2"]
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffff"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_5"]
             },
             {
               "type" : "expression",
@@ -1720,16 +1875,16 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_2"]
+              "value" : ["scalars", "tmp_4"]
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_3"]
+              "value" : ["scalars", "tmp_5"]
             }
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 223,
+            "line" : 228,
             "column" : 12,
             "source_fragment" : "time.write((bit<32>)count_temp2, reward)"
           }
@@ -1739,7 +1894,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_4"]
+              "value" : ["scalars", "tmp_6"]
             },
             {
               "type" : "expression",
@@ -1765,7 +1920,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_5"]
+              "value" : ["scalars", "tmp_7"]
             },
             {
               "type" : "expression",
@@ -1825,16 +1980,16 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_4"]
+              "value" : ["scalars", "tmp_6"]
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_5"]
+              "value" : ["scalars", "tmp_7"]
             }
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 225,
+            "line" : 230,
             "column" : 12,
             "source_fragment" : "reward_array.write((bit<32>)count_temp2, reward)"
           }
@@ -1844,7 +1999,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_6"]
+              "value" : ["scalars", "tmp_8"]
             },
             {
               "type" : "expression",
@@ -1878,12 +2033,12 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_6"]
+              "value" : ["scalars", "tmp_8"]
             }
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 226,
+            "line" : 231,
             "column" : 12,
             "source_fragment" : "q_value.read(q_value_temp,(bit<32>)hdr.q_header.egress_port)"
           }
@@ -2025,7 +2180,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 229,
+            "line" : 234,
             "column" : 12,
             "source_fragment" : "q_value_temp = q_value_temp1 + q_value_temp2 + reward"
           }
@@ -2035,7 +2190,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_7"]
+              "value" : ["scalars", "tmp_9"]
             },
             {
               "type" : "expression",
@@ -2065,7 +2220,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_7"]
+              "value" : ["scalars", "tmp_9"]
             },
             {
               "type" : "field",
@@ -2074,7 +2229,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 230,
+            "line" : 235,
             "column" : 12,
             "source_fragment" : "q_value.write((bit<32>)hdr.q_header.egress_port,q_value_temp)"
           }
@@ -2096,7 +2251,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 249,
+            "line" : 254,
             "column" : 12,
             "source_fragment" : "hdr.q_header.setValid()"
           }
@@ -2148,7 +2303,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 251,
+            "line" : 256,
             "column" : 12,
             "source_fragment" : "hdr.q_header.egress_port = 7w0 ++ standard_metadata.egress_port"
           }
@@ -2167,7 +2322,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 252,
+            "line" : 257,
             "column" : 12,
             "source_fragment" : "hdr.q_header.ingress_global_timestamp = standard_metadata.ingress_global_timestamp"
           }
@@ -2209,7 +2364,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 253,
+            "line" : 258,
             "column" : 12,
             "source_fragment" : "hdr.ipv4.totalLen = hdr.ipv4.totalLen + 6"
           }
@@ -2231,7 +2386,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 256,
+            "line" : 261,
             "column" : 12,
             "source_fragment" : "hdr.q_header.setInvalid()"
           }
@@ -2273,7 +2428,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 257,
+            "line" : 262,
             "column" : 12,
             "source_fragment" : "hdr.ipv4.totalLen = hdr.ipv4.totalLen - 6"
           }
@@ -2340,7 +2495,7 @@
           "id" : 1,
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 203,
+            "line" : 208,
             "column" : 10,
             "source_fragment" : "ipv4_qlearning"
           },
@@ -2382,7 +2537,7 @@
           "id" : 0,
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 218,
+            "line" : 223,
             "column" : 12,
             "source_fragment" : "hdr.q_header.isValid()"
           },
@@ -2405,7 +2560,7 @@
           "id" : 1,
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 233,
+            "line" : 238,
             "column" : 12,
             "source_fragment" : "hdr.ipv4.isValid()"
           },
@@ -2430,7 +2585,7 @@
       "id" : 1,
       "source_info" : {
         "filename" : "qlearning_source.p4",
-        "line" : 243,
+        "line" : 248,
         "column" : 8,
         "source_fragment" : "MyEgress"
       },
@@ -2490,7 +2645,7 @@
           "id" : 2,
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 248,
+            "line" : 253,
             "column" : 12,
             "source_fragment" : "hdr.ipv4.protocol == Q_PROTOCOL_SOURCE"
           },
@@ -2516,7 +2671,7 @@
           "id" : 3,
           "source_info" : {
             "filename" : "qlearning_source.p4",
-            "line" : 255,
+            "line" : 260,
             "column" : 12,
             "source_fragment" : "hdr.ipv4.protocol == Q_PROTOCOL_SINK"
           },

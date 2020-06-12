@@ -7,6 +7,13 @@ const bit<16> TYPE_IPV4 = 0x800;
 const bit<5>  IPV4_OPTION_MRI = 31;
 const bit<8>  Q_PROTOCOL_SOURCE = 0x8F;
 const bit<8>  Q_PROTOCOL_SINK = 0x90;
+const bit<32> PKT_INSTANCE_TYPE_NORMAL = 0;
+const bit<32> PKT_INSTANCE_TYPE_INGRESS_CLONE = 1;
+const bit<32> PKT_INSTANCE_TYPE_EGRESS_CLONE = 2;
+const bit<32> PKT_INSTANCE_TYPE_COALESCED = 3;
+const bit<32> PKT_INSTANCE_TYPE_INGRESS_RECIRC = 4;
+const bit<32> PKT_INSTANCE_TYPE_REPLICATION = 5;
+const bit<32> PKT_INSTANCE_TYPE_RESUBMIT= 6;
 
 
 /*************************************************************************
@@ -42,7 +49,7 @@ header ipv4_t {
 
 header q_learning_t {
     // mark the egress port and the timestamp when the packet is enqueued.
-    bit<9> egress_port;
+    bit<16> egress_port;
     bit<32> enq_timestamp;
 }
 
@@ -130,7 +137,7 @@ control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
     action drop() {
-        mark_to_drop();
+        mark_to_drop(standard_metadata);
     }
     
     action ipv4_forward(macAddr_t dstAddr, egressSpec_t port) {
@@ -139,6 +146,7 @@ control MyIngress(inout headers hdr,
         hdr.ethernet.dstAddr = dstAddr;
         hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
     }
+
 
     action ipv4_sendback(){
         standard_metadata.egress_spec = standard_metadata.ingress_port;
@@ -164,14 +172,15 @@ control MyIngress(inout headers hdr,
         size = 1024;
         default_action = NoAction();
     }
+     action ipv4_clone(){
+        clone(CloneType.I2E,(bit<32>)standard_metadata.ingress_port);
+    }
     
     apply {
         if (hdr.ipv4.protocol == Q_PROTOCOL_SOURCE){
-            ipv4_sendback();
+            ipv4_clone();
         }
-        else {
-            ipv4_lpm.apply();
-        }
+        ipv4_lpm.apply();
     }
 }
 
@@ -184,6 +193,18 @@ control MyEgress(inout headers hdr,
                  inout standard_metadata_t standard_metadata) {
 
     apply { 
+        // 在这里进行数据包头的处理
+        if(standard_metadata.instance_type == PKT_INSTANCE_TYPE_INGRESS_CLONE){
+                standard_metadata.egress_spec = standard_metadata.ingress_port;
+                meta.srcMACAddr = hdr.ethernet.srcAddr;
+                hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
+                hdr.ethernet.dstAddr = meta.srcMACAddr;
+                meta.srcIPAddr = hdr.ipv4.srcAddr;
+                hdr.ipv4.srcAddr = hdr.ipv4.dstAddr;
+                hdr.ipv4.dstAddr = meta.srcIPAddr;
+                hdr.ipv4.protocol = Q_PROTOCOL_SINK;
+                hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
+        }
     }
 }
 
@@ -196,7 +217,7 @@ control MyComputeChecksum(inout headers hdr, inout metadata meta) {
 	update_checksum(
 	    hdr.ipv4.isValid(),
             { hdr.ipv4.version,
-	      hdr.ipv4.ihl,
+	          hdr.ipv4.ihl,
               hdr.ipv4.diffserv,
               hdr.ipv4.totalLen,
               hdr.ipv4.identification,

@@ -1,23 +1,42 @@
 {
-  "program" : "qlearning_sink.p4",
-  "__meta__" : {
-    "version" : [2, 7],
-    "compiler" : "https://github.com/p4lang/p4c"
-  },
   "header_types" : [
     {
       "name" : "scalars_0",
       "id" : 0,
       "fields" : [
         ["tmp", 1, false],
-        ["metadata.srcMACAddr", 48, false],
-        ["metadata.srcIPAddr", 32, false],
-        ["_padding_1", 7, false]
+        ["tmp_0", 32, false],
+        ["userMetadata.srcMACAddr", 48, false],
+        ["userMetadata.srcIPAddr", 32, false],
+        ["_padding_0", 7, false]
+      ]
+    },
+    {
+      "name" : "standard_metadata",
+      "id" : 1,
+      "fields" : [
+        ["ingress_port", 9, false],
+        ["egress_spec", 9, false],
+        ["egress_port", 9, false],
+        ["instance_type", 32, false],
+        ["packet_length", 32, false],
+        ["enq_timestamp", 32, false],
+        ["enq_qdepth", 19, false],
+        ["deq_timedelta", 32, false],
+        ["deq_qdepth", 19, false],
+        ["ingress_global_timestamp", 48, false],
+        ["egress_global_timestamp", 48, false],
+        ["mcast_grp", 16, false],
+        ["egress_rid", 16, false],
+        ["checksum_error", 1, false],
+        ["parser_error", 32, false],
+        ["priority", 3, false],
+        ["_padding", 3, false]
       ]
     },
     {
       "name" : "ethernet_t",
-      "id" : 1,
+      "id" : 2,
       "fields" : [
         ["dstAddr", 48, false],
         ["srcAddr", 48, false],
@@ -26,7 +45,7 @@
     },
     {
       "name" : "ipv4_t",
-      "id" : 2,
+      "id" : 3,
       "fields" : [
         ["version", 4, false],
         ["ihl", 4, false],
@@ -44,38 +63,10 @@
     },
     {
       "name" : "q_learning_t",
-      "id" : 3,
-      "fields" : [
-        ["egress_port", 9, false],
-        ["enq_timestamp", 32, false],
-        ["_padding", 7, false]
-      ]
-    },
-    {
-      "name" : "standard_metadata",
       "id" : 4,
       "fields" : [
-        ["ingress_port", 9, false],
-        ["egress_spec", 9, false],
-        ["egress_port", 9, false],
-        ["clone_spec", 32, false],
-        ["instance_type", 32, false],
-        ["drop", 1, false],
-        ["recirculate_port", 16, false],
-        ["packet_length", 32, false],
-        ["enq_timestamp", 32, false],
-        ["enq_qdepth", 19, false],
-        ["deq_timedelta", 32, false],
-        ["deq_qdepth", 19, false],
-        ["ingress_global_timestamp", 48, false],
-        ["egress_global_timestamp", 48, false],
-        ["lf_field_list", 32, false],
-        ["mcast_grp", 16, false],
-        ["resubmit_flag", 32, false],
-        ["egress_rid", 16, false],
-        ["checksum_error", 1, false],
-        ["recirculate_flag", 32, false],
-        ["_padding_0", 5, false]
+        ["egress_port", 16, false],
+        ["enq_timestamp", 32, false]
       ]
     }
   ],
@@ -120,14 +111,21 @@
   "header_union_types" : [],
   "header_unions" : [],
   "header_union_stacks" : [],
-  "field_lists" : [],
+  "field_lists" : [
+    {
+      "id" : 1,
+      "name" : "fl",
+      "elements" : []
+    }
+  ],
   "errors" : [
-    ["NoError", 1],
-    ["PacketTooShort", 2],
-    ["NoMatch", 3],
-    ["StackOutOfBounds", 4],
-    ["HeaderTooShort", 5],
-    ["ParserTimeout", 6],
+    ["NoError", 0],
+    ["PacketTooShort", 1],
+    ["NoMatch", 2],
+    ["StackOutOfBounds", 3],
+    ["HeaderTooShort", 4],
+    ["ParserTimeout", 5],
+    ["ParserInvalidArgument", 6],
     ["IPHeaderTooShort", 7]
   ],
   "enums" : [],
@@ -159,7 +157,8 @@
               "next_state" : "parse_ipv4"
             },
             {
-              "value" : "default",
+              "type" : "default",
+              "value" : null,
               "mask" : null,
               "next_state" : null
             }
@@ -232,7 +231,7 @@
                 },
                 {
                   "type" : "hexstr",
-                  "value" : "7"
+                  "value" : "0x7"
                 }
               ],
               "op" : "verify"
@@ -246,7 +245,8 @@
               "next_state" : "parse_q_header"
             },
             {
-              "value" : "default",
+              "type" : "default",
+              "value" : null,
               "mask" : null,
               "next_state" : null
             }
@@ -274,7 +274,8 @@
           ],
           "transitions" : [
             {
-              "value" : "default",
+              "type" : "default",
+              "value" : null,
               "mask" : null,
               "next_state" : null
             }
@@ -291,11 +292,12 @@
       "id" : 0,
       "source_info" : {
         "filename" : "qlearning_sink.p4",
-        "line" : 218,
+        "line" : 239,
         "column" : 8,
         "source_fragment" : "MyDeparser"
       },
-      "order" : ["ethernet", "ipv4", "q_header"]
+      "order" : ["ethernet", "ipv4", "q_header"],
+      "primitives" : []
     }
   ],
   "meter_arrays" : [],
@@ -307,7 +309,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "qlearning_sink.p4",
-        "line" : 196,
+        "line" : 217,
         "column" : 1,
         "source_fragment" : "update_checksum( ..."
       },
@@ -374,13 +376,18 @@
       "runtime_data" : [],
       "primitives" : [
         {
-          "op" : "drop",
-          "parameters" : [],
+          "op" : "mark_to_drop",
+          "parameters" : [
+            {
+              "type" : "header",
+              "value" : "standard_metadata"
+            }
+          ],
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 133,
+            "line" : 140,
             "column" : 8,
-            "source_fragment" : "mark_to_drop()"
+            "source_fragment" : "mark_to_drop(standard_metadata)"
           }
         }
       ]
@@ -413,7 +420,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 137,
+            "line" : 144,
             "column" : 8,
             "source_fragment" : "standard_metadata.egress_spec = port"
           }
@@ -432,7 +439,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 138,
+            "line" : 145,
             "column" : 8,
             "source_fragment" : "hdr.ethernet.srcAddr = hdr.ethernet.dstAddr"
           }
@@ -451,7 +458,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 139,
+            "line" : 146,
             "column" : 8,
             "source_fragment" : "hdr.ethernet.dstAddr = dstAddr"
           }
@@ -493,7 +500,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 140,
+            "line" : 147,
             "column" : 8,
             "source_fragment" : "hdr.ipv4.ttl = hdr.ipv4.ttl - 1"
           }
@@ -501,8 +508,66 @@
       ]
     },
     {
-      "name" : "MyIngress.ipv4_sendback",
+      "name" : "MyIngress.ipv4_clone",
       "id" : 3,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_0"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "field",
+                    "value" : ["standard_metadata", "ingress_port"]
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "qlearning_sink.p4",
+            "line" : 176,
+            "column" : 28,
+            "source_fragment" : "(bit<32>)standard_metadata.ingress_port"
+          }
+        },
+        {
+          "op" : "clone_ingress_pkt_to_egress",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_0"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x1"
+            }
+          ],
+          "source_info" : {
+            "filename" : "qlearning_sink.p4",
+            "line" : 176,
+            "column" : 8,
+            "source_fragment" : "clone(CloneType.I2E,(bit<32>)standard_metadata.ingress_port)"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "qlearning_sink198",
+      "id" : 4,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -519,8 +584,8 @@
           ],
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 144,
-            "column" : 8,
+            "line" : 198,
+            "column" : 16,
             "source_fragment" : "standard_metadata.egress_spec = standard_metadata.ingress_port"
           }
         },
@@ -529,7 +594,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "metadata.srcMACAddr"]
+              "value" : ["scalars", "userMetadata.srcMACAddr"]
             },
             {
               "type" : "field",
@@ -538,8 +603,8 @@
           ],
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 145,
-            "column" : 8,
+            "line" : 199,
+            "column" : 16,
             "source_fragment" : "meta.srcMACAddr = hdr.ethernet.srcAddr"
           }
         },
@@ -557,8 +622,8 @@
           ],
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 146,
-            "column" : 8,
+            "line" : 200,
+            "column" : 16,
             "source_fragment" : "hdr.ethernet.srcAddr = hdr.ethernet.dstAddr"
           }
         },
@@ -571,13 +636,13 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "metadata.srcMACAddr"]
+              "value" : ["scalars", "userMetadata.srcMACAddr"]
             }
           ],
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 147,
-            "column" : 8,
+            "line" : 201,
+            "column" : 16,
             "source_fragment" : "hdr.ethernet.dstAddr = meta.srcMACAddr"
           }
         },
@@ -586,7 +651,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "metadata.srcIPAddr"]
+              "value" : ["scalars", "userMetadata.srcIPAddr"]
             },
             {
               "type" : "field",
@@ -595,8 +660,8 @@
           ],
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 148,
-            "column" : 8,
+            "line" : 202,
+            "column" : 16,
             "source_fragment" : "meta.srcIPAddr = hdr.ipv4.srcAddr"
           }
         },
@@ -614,8 +679,8 @@
           ],
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 149,
-            "column" : 8,
+            "line" : 203,
+            "column" : 16,
             "source_fragment" : "hdr.ipv4.srcAddr = hdr.ipv4.dstAddr"
           }
         },
@@ -628,13 +693,13 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "metadata.srcIPAddr"]
+              "value" : ["scalars", "userMetadata.srcIPAddr"]
             }
           ],
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 150,
-            "column" : 8,
+            "line" : 204,
+            "column" : 16,
             "source_fragment" : "hdr.ipv4.dstAddr = meta.srcIPAddr"
           }
         },
@@ -694,8 +759,8 @@
           ],
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 152,
-            "column" : 8,
+            "line" : 206,
+            "column" : 16,
             "source_fragment" : "hdr.ipv4.ttl = hdr.ipv4.ttl - 1"
           }
         }
@@ -708,15 +773,21 @@
       "id" : 0,
       "source_info" : {
         "filename" : "qlearning_sink.p4",
-        "line" : 129,
+        "line" : 136,
         "column" : 8,
         "source_fragment" : "MyIngress"
       },
       "init_table" : "node_2",
       "tables" : [
         {
-          "name" : "tbl_ipv4_sendback",
+          "name" : "tbl_ipv4_clone",
           "id" : 0,
+          "source_info" : {
+            "filename" : "qlearning_sink.p4",
+            "line" : 181,
+            "column" : 12,
+            "source_fragment" : "ipv4_clone()"
+          },
           "key" : [],
           "match_type" : "exact",
           "type" : "simple",
@@ -725,10 +796,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [3],
-          "actions" : ["MyIngress.ipv4_sendback"],
-          "base_default_next" : null,
+          "actions" : ["MyIngress.ipv4_clone"],
+          "base_default_next" : "MyIngress.ipv4_lpm",
           "next_tables" : {
-            "MyIngress.ipv4_sendback" : null
+            "MyIngress.ipv4_clone" : "MyIngress.ipv4_lpm"
           },
           "default_entry" : {
             "action_id" : 3,
@@ -742,7 +813,7 @@
           "id" : 1,
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 155,
+            "line" : 163,
             "column" : 10,
             "source_fragment" : "ipv4_lpm"
           },
@@ -783,7 +854,7 @@
           "id" : 0,
           "source_info" : {
             "filename" : "qlearning_sink.p4",
-            "line" : 169,
+            "line" : 180,
             "column" : 12,
             "source_fragment" : "hdr.ipv4.protocol == Q_PROTOCOL_SOURCE"
           },
@@ -801,7 +872,7 @@
               }
             }
           },
-          "true_next" : "tbl_ipv4_sendback",
+          "true_next" : "tbl_ipv4_clone",
           "false_next" : "MyIngress.ipv4_lpm"
         }
       ]
@@ -811,23 +882,88 @@
       "id" : 1,
       "source_info" : {
         "filename" : "qlearning_sink.p4",
-        "line" : 182,
+        "line" : 191,
         "column" : 8,
         "source_fragment" : "MyEgress"
       },
-      "init_table" : null,
-      "tables" : [],
+      "init_table" : "node_7",
+      "tables" : [
+        {
+          "name" : "tbl_qlearning_sink198",
+          "id" : 2,
+          "source_info" : {
+            "filename" : "qlearning_sink.p4",
+            "line" : 198,
+            "column" : 46,
+            "source_fragment" : "= standard_metadata.ingress_port; ..."
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [4],
+          "actions" : ["qlearning_sink198"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "qlearning_sink198" : null
+          },
+          "default_entry" : {
+            "action_id" : 4,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        }
+      ],
       "action_profiles" : [],
-      "conditionals" : []
+      "conditionals" : [
+        {
+          "name" : "node_7",
+          "id" : 1,
+          "source_info" : {
+            "filename" : "qlearning_sink.p4",
+            "line" : 197,
+            "column" : 11,
+            "source_fragment" : "standard_metadata.instance_type == PKT_INSTANCE_TYPE_INGRESS_CLONE"
+          },
+          "expression" : {
+            "type" : "expression",
+            "value" : {
+              "op" : "==",
+              "left" : {
+                "type" : "field",
+                "value" : ["standard_metadata", "instance_type"]
+              },
+              "right" : {
+                "type" : "hexstr",
+                "value" : "0x00000001"
+              }
+            }
+          },
+          "false_next" : null,
+          "true_next" : "tbl_qlearning_sink198"
+        }
+      ]
     }
   ],
   "checksums" : [
     {
       "name" : "cksum",
       "id" : 0,
+      "source_info" : {
+        "filename" : "qlearning_sink.p4",
+        "line" : 217,
+        "column" : 1,
+        "source_fragment" : "update_checksum( ..."
+      },
       "target" : ["ipv4", "hdrChecksum"],
       "type" : "generic",
       "calculation" : "calc",
+      "verify" : false,
+      "update" : true,
       "if_cond" : {
         "type" : "expression",
         "value" : {
@@ -869,24 +1005,21 @@
       ["standard_metadata", "egress_global_timestamp"]
     ],
     [
-      "intrinsic_metadata.lf_field_list",
-      ["standard_metadata", "lf_field_list"]
-    ],
-    [
       "intrinsic_metadata.mcast_grp",
       ["standard_metadata", "mcast_grp"]
-    ],
-    [
-      "intrinsic_metadata.resubmit_flag",
-      ["standard_metadata", "resubmit_flag"]
     ],
     [
       "intrinsic_metadata.egress_rid",
       ["standard_metadata", "egress_rid"]
     ],
     [
-      "intrinsic_metadata.recirculate_flag",
-      ["standard_metadata", "recirculate_flag"]
+      "intrinsic_metadata.priority",
+      ["standard_metadata", "priority"]
     ]
-  ]
+  ],
+  "program" : "qlearning_sink.p4",
+  "__meta__" : {
+    "version" : [2, 23],
+    "compiler" : "https://github.com/p4lang/p4c"
+  }
 }

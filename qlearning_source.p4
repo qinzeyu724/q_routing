@@ -4,11 +4,17 @@
 
 const bit<8>  UDP_PROTOCOL = 0x11;
 const bit<16> TYPE_IPV4 = 0x800;
-const bit<5>  IPV4_OPTION_MRI = 31;
 const bit<8>  Q_PROTOCOL_SOURCE = 0x8F;
 const bit<8>  Q_PROTOCOL_SINK = 0x90;
+const bit<8> Q_PROTOCOL_BACK = 0x91;
+const bit<32> PKT_INSTANCE_TYPE_NORMAL = 0;
+const bit<32> PKT_INSTANCE_TYPE_INGRESS_CLONE = 1;
+const bit<32> PKT_INSTANCE_TYPE_EGRESS_CLONE = 2;
+const bit<32> PKT_INSTANCE_TYPE_COALESCED = 3;
+const bit<32> PKT_INSTANCE_TYPE_INGRESS_RECIRC = 4;
+const bit<32> PKT_INSTANCE_TYPE_REPLICATION = 5;
+const bit<32> PKT_INSTANCE_TYPE_RESUBMIT= 6;
 
-#define MAX_HOPS 9
 
 /*************************************************************************
 *********************** H E A D E R S  ***********************************
@@ -17,8 +23,6 @@ const bit<8>  Q_PROTOCOL_SINK = 0x90;
 typedef bit<9>  egressSpec_t;
 typedef bit<48> macAddr_t;
 typedef bit<32> ip4Addr_t;
-typedef bit<32> switchID_t;
-typedef bit<32> qdepth_t;
 
 header ethernet_t {
     macAddr_t dstAddr;
@@ -41,25 +45,16 @@ header ipv4_t {
     ip4Addr_t dstAddr;
 }
 
-
 header q_learning_t {
     // mark the egress port and the timestamp when the packet is enqueued.
     bit<16> egress_port;
     bit<48> ingress_global_timestamp;
 }
 
-
-header switch_t {
-    switchID_t  swid;
-    qdepth_t    qdepth;
-}
-
-struct ingress_metadata_t {
-    bit<16>  count;
-}
-
-struct parser_metadata_t {
-    bit<16>  remaining;
+header q_back_t{
+    bit<16> egress_port;
+    bit<48> ingress_global_timestamp;
+    bit<48> q_value;
 }
 
 struct q_flag_metadata_t{
@@ -71,9 +66,10 @@ struct metadata {
 }
 
 struct headers {
-    ethernet_t         ethernet;
-    ipv4_t             ipv4;
-    q_learning_t       q_header;
+    ethernet_t          ethernet;
+    ipv4_t                   ipv4;
+    q_learning_t     q_header;
+    q_back_t            q_back;
 }
 
 error { IPHeaderTooShort }
@@ -104,6 +100,7 @@ parser MyParser(packet_in packet,
         verify(hdr.ipv4.ihl >= 5, error.IPHeaderTooShort);
         transition select(hdr.ipv4.protocol){
             Q_PROTOCOL_SINK: parse_q_header;
+            Q_PROTOCOL_BACK: parse_q_back;
             default: accept;
         }
 
@@ -111,6 +108,11 @@ parser MyParser(packet_in packet,
 
     state parse_q_header{
         packet.extract(hdr.q_header);
+        transition accept;
+    }
+
+    state parse_q_back{
+        packet.extract(hdr.q_back);
         transition accept;
     }
   
@@ -234,6 +236,15 @@ control MyIngress(inout headers hdr,
             q_value_temp = q_value_temp1 + q_value_temp2 + reward;
             q_value.write((bit<32>)hdr.q_header.egress_port,q_value_temp);
             // compute
+        }
+        if(hdr.q_back.isValid()){
+            // 需要根据返回的数据包更新自己的q值
+            reward = standard_metadata.ingress_global_timestamp - hdr.q_back.ingress_global_timestamp;
+            // 除以2,相当于单程delay
+            reward = reward >> 1;
+             q_value.read(q_value_temp,(bit<32>)hdr.q_header.egress_port);
+             q_value_temp = 
+             mark_to_drop(standard_metadata);
         }
         if (hdr.ipv4.isValid()) {
             ipv4_qlearning.apply();

@@ -2,7 +2,18 @@
 #include <core.p4>
 #include <v1model.p4>
 
+const bit<8>  UDP_PROTOCOL = 0x11;
 const bit<16> TYPE_IPV4 = 0x800;
+const bit<8>  Q_PROTOCOL_SOURCE = 0x8F;
+const bit<8>  Q_PROTOCOL_SINK = 0x90;
+const bit<8> Q_PROTOCOL_BACK = 0x91;
+const bit<32> PKT_INSTANCE_TYPE_NORMAL = 0;
+const bit<32> PKT_INSTANCE_TYPE_INGRESS_CLONE = 1;
+const bit<32> PKT_INSTANCE_TYPE_EGRESS_CLONE = 2;
+const bit<32> PKT_INSTANCE_TYPE_COALESCED = 3;
+const bit<32> PKT_INSTANCE_TYPE_INGRESS_RECIRC = 4;
+const bit<32> PKT_INSTANCE_TYPE_REPLICATION = 5;
+const bit<32> PKT_INSTANCE_TYPE_RESUBMIT= 6;
 
 /*************************************************************************
 *********************** H E A D E R S  ***********************************

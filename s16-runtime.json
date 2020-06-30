@@ -1,0 +1,41 @@
+{
+    "target": "bmv2",
+    "p4info": "build/qlearning.p4.p4info.txt",
+    "bmv2_json": "build/qlearning.json",
+    "table_entries": [
+      {
+        "table": "MyIngress.ipv4_qlearning",
+        "match": {
+          "hdr.ipv4.dstAddr": ["10.0.2.2", 32]
+        },
+        "action_name": "MyIngress.ipv4_forward",
+        "action_params": {
+          "dstAddr": "08:00:00:00:02:22",
+          "port": 3
+        }
+      },
+      {
+        "action_name": "MyIngress.get_active_port",
+        "action_params": {
+            "port_number": 224
+        },
+        "match": {
+            "hdr.ipv4.dstAddr": [
+                "10.0.2.0",
+                24
+            ]
+        },
+        "table": "MyIngress.qlearning_active_ports"
+    },
+    {
+        "table": "MyIngress.ipv4_qlearning",
+        "match": {
+          "hdr.ipv4.dstAddr": ["10.0.2.0", 24]
+        },
+        "action_name": "MyIngress.minimum_delay_forward",
+        "action_params": {
+        }
+      }
+    ]
+  }
+  

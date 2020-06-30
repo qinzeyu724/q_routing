@@ -49,6 +49,7 @@ header q_learning_t {
     // mark the egress port and the timestamp when the packet is enqueued.
     bit<16> egress_port;
     bit<48> ingress_global_timestamp;
+    bit<48> q_value;
 }
 
 header q_back_t{
@@ -62,7 +63,7 @@ struct q_flag_metadata_t{
 }
 
 struct metadata {
-    q_flag_metadata_t q_flag_metadata;
+     bit<8> active_port;
 }
 
 struct headers {
@@ -139,10 +140,7 @@ control MyIngress(inout headers hdr,
     register<bit<48>>(8) q_value;
     register<bit<4>>(1) packet_count;
     register<bit<16>>(8) port_count;
-    register<bit<48>>(64) ingress_global_timestamp;
-    register<bit<48>>(64) ret_timestamp;
-    register<bit<48>>(64) time;
-    register<bit<48>>(64) reward_array;
+
 
     bit<4> count_temp;
     bit<4> count_temp2;
@@ -151,12 +149,104 @@ control MyIngress(inout headers hdr,
     bit<48> q_value_temp1;
     bit<48> q_value_temp2;
     bit<48> reward;
+    // 对应8个端口
+    bit<48> q1;
     bit<48> q2;
     bit<48> q3;
     bit<48> q4;
+    bit<48> q5;
+    bit<48> q6;
+    bit<48> q7;
+    bit<48> q8;
+    bit<48> min_q = 0xFFFFFFFFFFFF;
+    bit<9> min_port = 1;
+
+    action read_q8(){
+        q_value.read(q8,(bit<32>)8);
+        if(meta.active_port[6:6]==0x1){
+            if(q8 < min_q){
+                min_q = q8;
+                min_port = 8;
+            }
+        }
+    } 
+    action read_q7(){
+        q_value.read(q7,(bit<32>)7);
+        if(meta.active_port[6:6]==0x1){
+            if(q7 < min_q){
+                min_q = q7;
+                min_port = 7;
+            }
+        }    
+        read_q8();
+    }
+    action read_q6(){
+        q_value.read(q6,(bit<32>)6);
+        if(meta.active_port[5:5]==0x1){
+            if(q6 < min_q){
+                min_q = q6;
+                min_port = 6;
+            }
+        }
+        read_q7();
+    }
+    action read_q5(){
+        q_value.read(q5,(bit<32>)5);
+        if(meta.active_port[4:4]==0x1){
+            if(q5 < min_q){
+                min_q = q5;
+                min_port = 5;
+            }
+        }
+        read_q6();
+    }
+    action read_q4(){
+        q_value.read(q4,(bit<32>)4);
+        if(meta.active_port[3:3]==0x1){
+            if(q4 < min_q){
+                min_q = q4;
+                min_port = 4;
+            }
+        }
+        read_q5();
+    }
+    action read_q3(){
+        q_value.read(q3,(bit<32>)3);
+        if(meta.active_port[2:2]==0x1){
+            if(q3 < min_q){
+                min_q = q3;
+                min_port = 3;
+            }
+        }
+        read_q4();
+    }
+    action read_q2(){
+        q_value.read(q2,(bit<32>)2);
+        if(meta.active_port[1:1]==0x1){
+            if(q2 < min_q){
+                min_q = q2;
+                min_port = 2;
+            }
+        }
+        read_q3();
+    }
+    action read_q1(){
+        q_value.read(q1,(bit<32>)1);
+        if(meta.active_port[0:0]==0x1){
+            if(q1 < min_q){
+                min_q = q1;
+                min_port = 1;
+            }
+        }
+        read_q2();
+    }
 
     action drop() {
-        mark_to_drop();
+        mark_to_drop(standard_metadata);
+    }
+
+    action get_active_port(bit<8> port_number){
+        meta.active_port = port_number;
     }
     
     action ipv4_forward(macAddr_t dstAddr, egressSpec_t port) {
@@ -166,45 +256,32 @@ control MyIngress(inout headers hdr,
         hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
     }
 
+
     action minimum_delay_forward(){
         packet_count.read(count_temp,(bit<32>)0);
-        q_value.read(q2,(bit<32>)2);
-        q_value.read(q3,(bit<32>)3);
-        q_value.read(q4,(bit<32>)4);
-        if(count_temp == 2){
+        read_q1();
+        if(count_temp == 2 && meta.active_port[1:1]==1){
             standard_metadata.egress_spec = 9w2;
-        }else if(count_temp == 3){
+        }else if(count_temp == 3 && meta.active_port[2:2]==1){
             standard_metadata.egress_spec = 9w3;
-        }else if(count_temp == 4){
+        }else if(count_temp == 4 && meta.active_port[3:3]==1){
             standard_metadata.egress_spec = 9w4;
+        }else if(count_temp == 5 && meta.active_port[4:4]==1){
+            standard_metadata.egress_spec = 9w5;
+        }else if(count_temp == 6 && meta.active_port[5:5]==1){
+            standard_metadata.egress_spec = 9w6;
+        }else if(count_temp == 7 && meta.active_port[6:6]==1){
+            standard_metadata.egress_spec = 9w7;
+        }else if(count_temp == 8 && meta.active_port[7:7]==1){
+            standard_metadata.egress_spec = 9w8;
         }else{
-            if((q2<q3)&&(q2<q4)){
-                standard_metadata.egress_spec = 9w2;
-            }else if((q3<q2)&&(q3<q4)){
-                standard_metadata.egress_spec = 9w3;
-            }else{
-                standard_metadata.egress_spec = 9w4;
-            }
+            standard_metadata.egress_spec = min_port;
         }
         count_temp = count_temp + 1;
         packet_count.write((bit<32>)0,count_temp);
         port_count.read(count_temp3,(bit<32>)standard_metadata.egress_spec);
         count_temp3 = count_temp3+1;
         port_count.write((bit<32>)standard_metadata.egress_spec,count_temp3);
-
-    }
-
-    table ipv4_lpm {
-        key = {
-            hdr.ipv4.dstAddr: lpm;
-        }
-        actions = {
-            ipv4_forward;
-            drop;
-            NoAction;
-        }
-        size = 1024;
-        default_action = NoAction();
     }
 
     table ipv4_qlearning {
@@ -217,36 +294,40 @@ control MyIngress(inout headers hdr,
             NoAction;
             minimum_delay_forward;
         }
+        size = 1024;
+        default_action = NoAction();
+    }
+    table qlearning_active_ports {
+        key = {
+            hdr.ipv4.dstAddr: lpm;
+        }
+        actions = {
+            get_active_port;
+            NoAction;
+        }
+        size = 1024;
+        default_action = NoAction();
     }
 
 
     
     apply {
-        if (hdr.q_header.isValid()){
-            packet_count.read(count_temp2,(bit<32>)0);
-            ingress_global_timestamp.write((bit<32>)count_temp2, hdr.q_header.ingress_global_timestamp);
-            ret_timestamp.write((bit<32>)count_temp2, standard_metadata.ingress_global_timestamp);
-            reward = standard_metadata.ingress_global_timestamp - hdr.q_header.ingress_global_timestamp;
-            time.write((bit<32>)count_temp2, reward);
+        if(hdr.q_back.isValid()){
+            qlearning_active_ports.apply();
+            // 需要根据返回的数据包更新自己的q值
+            reward = standard_metadata.ingress_global_timestamp - hdr.q_back.ingress_global_timestamp;
+            // 除以2,相当于单程delay
+            reward = reward >> 1;
+            reward = reward + hdr.q_back.q_value;
             reward = reward >> 2;
-            reward_array.write((bit<32>)count_temp2, reward);
             q_value.read(q_value_temp,(bit<32>)hdr.q_header.egress_port);
             q_value_temp1 = q_value_temp >> 1;
             q_value_temp2 = q_value_temp >> 2;
             q_value_temp = q_value_temp1 + q_value_temp2 + reward;
             q_value.write((bit<32>)hdr.q_header.egress_port,q_value_temp);
-            // compute
+            mark_to_drop(standard_metadata);
         }
-        if(hdr.q_back.isValid()){
-            // 需要根据返回的数据包更新自己的q值
-            reward = standard_metadata.ingress_global_timestamp - hdr.q_back.ingress_global_timestamp;
-            // 除以2,相当于单程delay
-            reward = reward >> 1;
-             q_value.read(q_value_temp,(bit<32>)hdr.q_header.egress_port);
-             q_value_temp = 
-             mark_to_drop(standard_metadata);
-        }
-        if (hdr.ipv4.isValid()) {
+        else if (hdr.ipv4.isValid()) {
             ipv4_qlearning.apply();
         }
     }
@@ -266,6 +347,7 @@ control MyEgress(inout headers hdr,
             // could also be egress_spec
             hdr.q_header.egress_port = 7w0 ++ standard_metadata.egress_port;
             hdr.q_header.ingress_global_timestamp = standard_metadata.ingress_global_timestamp;
+            hdr.q_header.q_value = 0;
             hdr.ipv4.totalLen = hdr.ipv4.totalLen + 6;
         }
         if (hdr.ipv4.protocol == Q_PROTOCOL_SINK){
@@ -285,7 +367,7 @@ control MyComputeChecksum(inout headers hdr, inout metadata meta) {
 	update_checksum(
 	    hdr.ipv4.isValid(),
             { hdr.ipv4.version,
-	      hdr.ipv4.ihl,
+	          hdr.ipv4.ihl,
               hdr.ipv4.diffserv,
               hdr.ipv4.totalLen,
               hdr.ipv4.identification,

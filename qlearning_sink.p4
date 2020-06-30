@@ -172,6 +172,7 @@ control MyIngress(inout headers hdr,
         size = 1024;
         default_action = NoAction();
     }
+
      action ipv4_clone(){
         clone(CloneType.I2E,(bit<32>)standard_metadata.ingress_port);
     }

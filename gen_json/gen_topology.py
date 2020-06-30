@@ -25,7 +25,7 @@ for i in range(1,sw_num+1):
 delay = [random.randint(5,20) for i in range(100)]
 
 link = [["h1", "s1-p1"], ["s1-p2", "s2-p1"], ["s1-p3", "s5-p1"],["s2-p2", "s3-p1"], ["s2-p3", "s6-p1"], ["s3-p2", "s4-p1"],
-["s3-p3", "s7-p1"],["s4-p2", "s8-p1"],["s5-p2", "s6-p2"],["s5-p3", "s9-p1"],["s6-p3", "s7-p1"],["s6-p4", "s10-p1"],["s7-p3", "s8-p2"],
+["s3-p3", "s7-p1"],["s4-p2", "s8-p1"],["s5-p2", "s6-p2"],["s5-p3", "s9-p1"],["s6-p3", "s7-p2"],["s6-p4", "s10-p1"],["s7-p3", "s8-p2"],
 ["s7-p4", "s11-p1"],["s8-p3", "s12-p1"],["s9-p2", "s10-p2"],["s9-p3", "s13-p1"],["s10-p3", "s11-p2"],["s10-p4", "s14-p1"],["s11-p3", "s12-p2"],
 ["s12-p3", "s16-p1"],["s13-p2", "s14-p2"],["s14-p3", "s15-p2"],["s15-p3", "s16-p2"],["s16-p3", "h2"]]
 
@@ -35,9 +35,11 @@ topology['links'] = link
 
 for i in range(2,sw_num):
     file_name = "s{}-runtime.json".format(i)
-    
 
-f=open('topology1.json', 'w+')
+for x in link:
+    x.append("{}ms".format(random.randint(10,100)))
+
+f=open('topology.json', 'w+')
 print (json.dumps(topology, sort_keys=True, indent=4, separators=(',', ': ')),file = f)
 
 

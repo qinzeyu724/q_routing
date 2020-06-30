@@ -1,21 +1,197 @@
 {
     "hosts": {
-        "h1": {"ip": "10.0.1.1/24", "mac": "08:00:00:00:01:11",
-               "commands":["route add default gw 10.0.1.10 dev eth0",
-                           "arp -i eth0 -s 10.0.1.10 08:00:00:00:01:00"]},
-        "h2": {"ip": "10.0.2.2/24", "mac": "08:00:00:00:02:22",
-               "commands":["route add default gw 10.0.2.20 dev eth0",
-                           "arp -i eth0 -s 10.0.2.20 08:00:00:00:02:00"]}
-    },
-    "switches": {
-        "s1": { "runtime_json" : "s1-runtime.json" },
-        "s2": { "runtime_json" : "s2-runtime.json" },
-	       "s3": { "runtime_json" : "s3-runtime.json" },
-	       "s4": { "runtime_json" : "s4-runtime.json" },
-        "s5": { "runtime_json" : "s5-runtime.json" }
+        "h1": {
+            "commands": [
+                "route add default gw 10.0.1.10 dev eth0",
+                "arp -i eth0 -s 10.0.1.10 08:00:00:00:01:00"
+            ],
+            "ip": "10.0.1.1/24",
+            "mac": "08:00:00:00:01:11"
+        },
+        "h2": {
+            "commands": [
+                "route add default gw 10.0.2.20 dev eth0",
+                "arp -i eth0 -s 10.0.2.20 08:00:00:00:02:00"
+            ],
+            "ip": "10.0.2.2/24",
+            "mac": "08:00:00:00:02:22"
+        }
     },
     "links": [
-              ["h1", "s1-p1"], ["s1-p2", "s2-p1","200ms"], ["s1-p3", "s3-p1","500ms"],
-              ["s1-p4", "s4-p1","1"], ["s2-p2", "s5-p2","200ms"], ["s3-p2", "s5-p3","500ms"], ["s4-p2", "s5-p4"], ["s5-p1", "h2"]
-    ]
+        [
+            "h1",
+            "s1-p1",
+            "80ms"
+        ],
+        [
+            "s1-p2",
+            "s2-p1",
+            "73ms"
+        ],
+        [
+            "s1-p3",
+            "s5-p1",
+            "56ms"
+        ],
+        [
+            "s2-p2",
+            "s3-p1",
+            "98ms"
+        ],
+        [
+            "s2-p3",
+            "s6-p1",
+            "81ms"
+        ],
+        [
+            "s3-p2",
+            "s4-p1",
+            "92ms"
+        ],
+        [
+            "s3-p3",
+            "s7-p1",
+            "61ms"
+        ],
+        [
+            "s4-p2",
+            "s8-p1",
+            "59ms"
+        ],
+        [
+            "s5-p2",
+            "s6-p2",
+            "56ms"
+        ],
+        [
+            "s5-p3",
+            "s9-p1",
+            "71ms"
+        ],
+        [
+            "s6-p3",
+            "s7-p2",
+            "81ms"
+        ],
+        [
+            "s6-p4",
+            "s10-p1",
+            "31ms"
+        ],
+        [
+            "s7-p3",
+            "s8-p2",
+            "12ms"
+        ],
+        [
+            "s7-p4",
+            "s11-p1",
+            "100ms"
+        ],
+        [
+            "s8-p3",
+            "s12-p1",
+            "38ms"
+        ],
+        [
+            "s9-p2",
+            "s10-p2",
+            "22ms"
+        ],
+        [
+            "s9-p3",
+            "s13-p1",
+            "94ms"
+        ],
+        [
+            "s10-p3",
+            "s11-p2",
+            "73ms"
+        ],
+        [
+            "s10-p4",
+            "s14-p1",
+            "50ms"
+        ],
+        [
+            "s11-p3",
+            "s12-p2",
+            "92ms"
+        ],
+        [
+            "s12-p3",
+            "s16-p1",
+            "17ms"
+        ],
+        [
+            "s13-p2",
+            "s14-p2",
+            "14ms"
+        ],
+        [
+            "s14-p3",
+            "s15-p2",
+            "99ms"
+        ],
+        [
+            "s15-p3",
+            "s16-p2",
+            "52ms"
+        ],
+        [
+            "s16-p3",
+            "h2",
+            "85ms"
+        ]
+    ],
+    "switches": {
+        "s1": {
+            "runtime_json": "s1-runtime.json"
+        },
+        "s10": {
+            "runtime_json": "s10-runtime.json"
+        },
+        "s11": {
+            "runtime_json": "s11-runtime.json"
+        },
+        "s12": {
+            "runtime_json": "s12-runtime.json"
+        },
+        "s13": {
+            "runtime_json": "s13-runtime.json"
+        },
+        "s14": {
+            "runtime_json": "s14-runtime.json"
+        },
+        "s15": {
+            "runtime_json": "s15-runtime.json"
+        },
+        "s16": {
+            "runtime_json": "s16-runtime.json"
+        },
+        "s2": {
+            "runtime_json": "s2-runtime.json"
+        },
+        "s3": {
+            "runtime_json": "s3-runtime.json"
+        },
+        "s4": {
+            "runtime_json": "s4-runtime.json"
+        },
+        "s5": {
+            "runtime_json": "s5-runtime.json"
+        },
+        "s6": {
+            "runtime_json": "s6-runtime.json"
+        },
+        "s7": {
+            "runtime_json": "s7-runtime.json"
+        },
+        "s8": {
+            "runtime_json": "s8-runtime.json"
+        },
+        "s9": {
+            "runtime_json": "s9-runtime.json"
+        }
+    }
 }

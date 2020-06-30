@@ -56,7 +56,7 @@ def main():
     iface = get_if()
 
     pkt = Ether(src=get_if_hwaddr(iface), dst="ff:ff:ff:ff:ff:ff") / IP(
-        dst=addr, proto = 0x8F) / UDP(
+        dst=addr) / UDP(
             dport=4321, sport=1234) / sys.argv[2]
 
  #   pkt = Ether(src=get_if_hwaddr(iface), dst="ff:ff:ff:ff:ff:ff") / IP(
@@ -68,7 +68,7 @@ def main():
     try:
       for i in range(int(sys.argv[3])):
         sendp(pkt, iface=iface)
-        sleep(1)
+        sleep(0.1)
     except KeyboardInterrupt:
         raise
 

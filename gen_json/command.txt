@@ -1,0 +1,8 @@
+mirroring_add 1 1
+mirroring_add 2 2
+mirroring_add 3 3
+mirroring_add 4 4
+mirroring_add 5 5
+mirroring_add 6 6
+mirroring_add 7 7
+mirroring_add 8 8

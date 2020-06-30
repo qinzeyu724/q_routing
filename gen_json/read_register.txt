@@ -1,0 +1,2 @@
+register_read port_count
+register_read q_value

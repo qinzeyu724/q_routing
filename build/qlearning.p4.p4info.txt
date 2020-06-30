@@ -121,7 +121,7 @@ registers {
       }
     }
   }
-  size: 8
+  size: 16
 }
 registers {
   preamble {
@@ -148,6 +148,21 @@ registers {
     bitstring {
       bit {
         bitwidth: 16
+      }
+    }
+  }
+  size: 16
+}
+registers {
+  preamble {
+    id: 379752408
+    name: "MyIngress.port_active_test"
+    alias: "port_active_test"
+  }
+  type_spec {
+    bitstring {
+      bit {
+        bitwidth: 1
       }
     }
   }

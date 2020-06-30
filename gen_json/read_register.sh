@@ -1,0 +1,16 @@
+simple_switch_CLI --thrift-port 9090 < read_register.txt
+simple_switch_CLI --thrift-port 9091 < read_register.txt
+simple_switch_CLI --thrift-port 9092 < read_register.txt
+simple_switch_CLI --thrift-port 9093 < read_register.txt
+simple_switch_CLI --thrift-port 9094 < read_register.txt
+simple_switch_CLI --thrift-port 9095 < read_register.txt
+simple_switch_CLI --thrift-port 9096 < read_register.txt
+simple_switch_CLI --thrift-port 9097 < read_register.txt
+simple_switch_CLI --thrift-port 9098 < read_register.txt
+simple_switch_CLI --thrift-port 9099 < read_register.txt
+simple_switch_CLI --thrift-port 9100 < read_register.txt
+simple_switch_CLI --thrift-port 9101 < read_register.txt
+simple_switch_CLI --thrift-port 9102 < read_register.txt
+simple_switch_CLI --thrift-port 9103 < read_register.txt
+simple_switch_CLI --thrift-port 9104 < read_register.txt
+simple_switch_CLI --thrift-port 9105 < read_register.txt

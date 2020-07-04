@@ -349,7 +349,7 @@ control MyIngress(inout headers hdr,
             // 假如这个包头中q_header已经存在
             ipv4_qlearning.apply();
             hdr.q_header.q_value = meta. q_value;
-            ipv4_clone();
+            // hdr.q_header.q_value = 48w3;
         }else if (hdr.ipv4.isValid()){
             hdr.ipv4.protocol = Q_PROTOCOL_SOURCE;
             minimum_delay_forward();
@@ -366,20 +366,24 @@ control MyIngress(inout headers hdr,
 control MyEgress(inout headers hdr,
                  inout metadata meta,
                  inout standard_metadata_t standard_metadata) {
+    action clone_e2e(){
+        clone(CloneType.E2E,(bit<32>)standard_metadata.ingress_port);
+    }
 
     apply {
-        if (standard_metadata.instance_type == PKT_INSTANCE_TYPE_INGRESS_CLONE){
+        if (standard_metadata.instance_type == PKT_INSTANCE_TYPE_EGRESS_CLONE){
                 // 将q_header更改为q_back
-                hdr.q_back.setValid();
-                hdr.q_back.egress_port = hdr.q_header.egress_port;
-                hdr.q_back.ingress_global_timestamp = hdr.q_header.ingress_global_timestamp;
-                hdr.q_back.q_value = hdr.q_header.q_value;
+                // hdr.q_back.setValid();
+                // hdr.q_back.egress_port = hdr.q_header.egress_port;
+                // hdr.q_back.ingress_global_timestamp = hdr.q_header.ingress_global_timestamp;
+                // hdr.q_back.q_value = hdr.q_header.q_value;
                 hdr.ipv4.protocol = Q_PROTOCOL_BACK;
-                hdr.q_header.setInvalid();
+                // hdr.q_header.setInvalid();
         }else if(hdr.q_header.isValid()){
+            clone_e2e();
             hdr.q_header.egress_port = 7w0 ++ standard_metadata.egress_port;
             hdr.q_header.ingress_global_timestamp = standard_metadata.ingress_global_timestamp;
-            hdr.q_header.q_value = 0;    
+            // hdr.q_header.q_value = 0;    
         }else if (hdr.ipv4.protocol == Q_PROTOCOL_SOURCE){
             hdr.q_header.setValid();
             // could also be egress_spec

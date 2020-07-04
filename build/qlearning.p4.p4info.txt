@@ -60,13 +60,6 @@ actions {
 }
 actions {
   preamble {
-    id: 32266660
-    name: "MyIngress.ipv4_clone"
-    alias: "ipv4_clone"
-  }
-}
-actions {
-  preamble {
     id: 28792405
     name: "MyIngress.ipv4_forward"
     alias: "ipv4_forward"
@@ -106,6 +99,13 @@ actions {
     id: 1
     name: "port_number"
     bitwidth: 8
+  }
+}
+actions {
+  preamble {
+    id: 33016645
+    name: "MyEgress.clone_e2e"
+    alias: "clone_e2e"
   }
 }
 registers {

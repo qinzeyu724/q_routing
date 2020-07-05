@@ -350,6 +350,7 @@ control MyIngress(inout headers hdr,
             ipv4_qlearning.apply();
             hdr.q_header.q_value = meta. q_value;
             // hdr.q_header.q_value = 48w3;
+            ipv4_clone();
         }else if (hdr.ipv4.isValid()){
             hdr.ipv4.protocol = Q_PROTOCOL_SOURCE;
             minimum_delay_forward();
@@ -371,7 +372,7 @@ control MyEgress(inout headers hdr,
     }
 
     apply {
-        if (standard_metadata.instance_type == PKT_INSTANCE_TYPE_EGRESS_CLONE){
+        if (standard_metadata.instance_type == PKT_INSTANCE_TYPE_INGRESS_CLONE){
                 // 将q_header更改为q_back
                 // hdr.q_back.setValid();
                 // hdr.q_back.egress_port = hdr.q_header.egress_port;
@@ -380,7 +381,7 @@ control MyEgress(inout headers hdr,
                 hdr.ipv4.protocol = Q_PROTOCOL_BACK;
                 // hdr.q_header.setInvalid();
         }else if(hdr.q_header.isValid()){
-            clone_e2e();
+            // clone_e2e();
             hdr.q_header.egress_port = 7w0 ++ standard_metadata.egress_port;
             hdr.q_header.ingress_global_timestamp = standard_metadata.ingress_global_timestamp;
             // hdr.q_header.q_value = 0;    

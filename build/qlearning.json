@@ -9,7 +9,7 @@
         ["tmp_1", 32, false],
         ["tmp_2", 32, false],
         ["tmp_3", 32, false],
-        ["tmp_4", 1, false],
+        ["tmp_4", 32, false],
         ["tmp_5", 1, false],
         ["tmp_6", 1, false],
         ["tmp_7", 1, false],
@@ -17,8 +17,9 @@
         ["tmp_9", 1, false],
         ["tmp_10", 1, false],
         ["tmp_11", 1, false],
-        ["tmp_12", 32, false],
+        ["tmp_12", 1, false],
         ["tmp_13", 32, false],
+        ["tmp_14", 32, false],
         ["count_temp_0", 4, false],
         ["count_temp3_0", 16, false],
         ["q_value_temp_0", 48, false],
@@ -48,7 +49,6 @@
         ["cond_34", 1, false],
         ["cond_36", 1, false],
         ["cond_38", 1, false],
-        ["tmp_14", 32, false],
         ["userMetadata.active_port", 8, false],
         ["userMetadata.q_value", 48, false],
         ["_padding_0", 2, false]
@@ -382,7 +382,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "qlearning.p4",
-        "line" : 426,
+        "line" : 427,
         "column" : 8,
         "source_fragment" : "MyDeparser"
       },
@@ -448,7 +448,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "qlearning.p4",
-        "line" : 404,
+        "line" : 405,
         "column" : 1,
         "source_fragment" : "update_checksum( ..."
       },
@@ -516,8 +516,66 @@
       "primitives" : []
     },
     {
-      "name" : "MyIngress.ipv4_forward",
+      "name" : "MyIngress.ipv4_clone",
       "id" : 2,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_0"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "field",
+                    "value" : ["standard_metadata", "ingress_port"]
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "qlearning.p4",
+            "line" : 167,
+            "column" : 28,
+            "source_fragment" : "(bit<32>)standard_metadata.ingress_port"
+          }
+        },
+        {
+          "op" : "clone_ingress_pkt_to_egress",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_0"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x1"
+            }
+          ],
+          "source_info" : {
+            "filename" : "qlearning.p4",
+            "line" : 167,
+            "column" : 8,
+            "source_fragment" : "clone(CloneType.I2E,(bit<32>)standard_metadata.ingress_port)"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "MyIngress.ipv4_forward",
+      "id" : 3,
       "runtime_data" : [
         {
           "name" : "dstAddr",
@@ -632,7 +690,7 @@
     },
     {
       "name" : "MyIngress.ipv4_forward",
-      "id" : 3,
+      "id" : 4,
       "runtime_data" : [
         {
           "name" : "dstAddr",
@@ -747,7 +805,7 @@
     },
     {
       "name" : "MyIngress.drop",
-      "id" : 4,
+      "id" : 5,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -769,7 +827,7 @@
     },
     {
       "name" : "MyIngress.minimum_delay_forward",
-      "id" : 5,
+      "id" : 6,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -4249,7 +4307,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_0"]
+              "value" : ["scalars", "tmp_1"]
             },
             {
               "type" : "expression",
@@ -4289,7 +4347,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_0"]
+              "value" : ["scalars", "tmp_1"]
             }
           ],
           "source_info" : {
@@ -4346,7 +4404,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_1"]
+              "value" : ["scalars", "tmp_2"]
             },
             {
               "type" : "expression",
@@ -4382,7 +4440,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_1"]
+              "value" : ["scalars", "tmp_2"]
             },
             {
               "type" : "field",
@@ -4400,7 +4458,7 @@
     },
     {
       "name" : "MyIngress.minimum_delay_forward",
-      "id" : 6,
+      "id" : 7,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -7880,7 +7938,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_2"]
+              "value" : ["scalars", "tmp_3"]
             },
             {
               "type" : "expression",
@@ -7920,7 +7978,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_2"]
+              "value" : ["scalars", "tmp_3"]
             }
           ],
           "source_info" : {
@@ -7977,7 +8035,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_3"]
+              "value" : ["scalars", "tmp_4"]
             },
             {
               "type" : "expression",
@@ -8013,7 +8071,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_3"]
+              "value" : ["scalars", "tmp_4"]
             },
             {
               "type" : "field",
@@ -8031,7 +8089,7 @@
     },
     {
       "name" : "MyIngress.get_active_port",
-      "id" : 7,
+      "id" : 8,
       "runtime_data" : [
         {
           "name" : "port_number",
@@ -8063,7 +8121,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_4"]
+              "value" : ["scalars", "tmp_5"]
             },
             {
               "type" : "expression",
@@ -8113,7 +8171,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_4"]
+              "value" : ["scalars", "tmp_5"]
             }
           ],
           "source_info" : {
@@ -8128,7 +8186,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_5"]
+              "value" : ["scalars", "tmp_6"]
             },
             {
               "type" : "expression",
@@ -8198,7 +8256,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_5"]
+              "value" : ["scalars", "tmp_6"]
             }
           ],
           "source_info" : {
@@ -8213,7 +8271,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_6"]
+              "value" : ["scalars", "tmp_7"]
             },
             {
               "type" : "expression",
@@ -8283,7 +8341,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_6"]
+              "value" : ["scalars", "tmp_7"]
             }
           ],
           "source_info" : {
@@ -8298,7 +8356,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_7"]
+              "value" : ["scalars", "tmp_8"]
             },
             {
               "type" : "expression",
@@ -8368,7 +8426,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_7"]
+              "value" : ["scalars", "tmp_8"]
             }
           ],
           "source_info" : {
@@ -8383,7 +8441,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_8"]
+              "value" : ["scalars", "tmp_9"]
             },
             {
               "type" : "expression",
@@ -8453,7 +8511,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_8"]
+              "value" : ["scalars", "tmp_9"]
             }
           ],
           "source_info" : {
@@ -8468,7 +8526,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_9"]
+              "value" : ["scalars", "tmp_10"]
             },
             {
               "type" : "expression",
@@ -8538,7 +8596,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_9"]
+              "value" : ["scalars", "tmp_10"]
             }
           ],
           "source_info" : {
@@ -8553,7 +8611,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_10"]
+              "value" : ["scalars", "tmp_11"]
             },
             {
               "type" : "expression",
@@ -8623,7 +8681,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_10"]
+              "value" : ["scalars", "tmp_11"]
             }
           ],
           "source_info" : {
@@ -8638,7 +8696,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_11"]
+              "value" : ["scalars", "tmp_12"]
             },
             {
               "type" : "expression",
@@ -8708,7 +8766,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_11"]
+              "value" : ["scalars", "tmp_12"]
             }
           ],
           "source_info" : {
@@ -8722,7 +8780,7 @@
     },
     {
       "name" : "qlearning164",
-      "id" : 8,
+      "id" : 9,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -8767,7 +8825,7 @@
     },
     {
       "name" : "qlearning341",
-      "id" : 9,
+      "id" : 10,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -8775,7 +8833,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_12"]
+              "value" : ["scalars", "tmp_13"]
             },
             {
               "type" : "expression",
@@ -8815,7 +8873,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_12"]
+              "value" : ["scalars", "tmp_13"]
             }
           ],
           "source_info" : {
@@ -9012,7 +9070,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_13"]
+              "value" : ["scalars", "tmp_14"]
             },
             {
               "type" : "expression",
@@ -9048,7 +9106,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_13"]
+              "value" : ["scalars", "tmp_14"]
             },
             {
               "type" : "field",
@@ -9081,7 +9139,7 @@
     },
     {
       "name" : "qlearning351",
-      "id" : 10,
+      "id" : 11,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -9106,8 +9164,8 @@
       ]
     },
     {
-      "name" : "qlearning354",
-      "id" : 11,
+      "name" : "qlearning355",
+      "id" : 12,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -9132,8 +9190,8 @@
       ]
     },
     {
-      "name" : "qlearning357",
-      "id" : 12,
+      "name" : "qlearning358",
+      "id" : 13,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -9146,7 +9204,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 357,
+            "line" : 358,
             "column" : 12,
             "source_fragment" : "mark_to_drop(standard_metadata)"
           }
@@ -9154,65 +9212,7 @@
       ]
     },
     {
-      "name" : "MyEgress.clone_e2e",
-      "id" : 13,
-      "runtime_data" : [],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_14"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["standard_metadata", "ingress_port"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffff"
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "qlearning.p4",
-            "line" : 370,
-            "column" : 28,
-            "source_fragment" : "(bit<32>)standard_metadata.ingress_port"
-          }
-        },
-        {
-          "op" : "clone_egress_pkt_to_egress",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_14"]
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0x1"
-            }
-          ],
-          "source_info" : {
-            "filename" : "qlearning.p4",
-            "line" : 370,
-            "column" : 8,
-            "source_fragment" : "clone(CloneType.E2E,(bit<32>)standard_metadata.ingress_port)"
-          }
-        }
-      ]
-    },
-    {
-      "name" : "qlearning380",
+      "name" : "qlearning381",
       "id" : 14,
       "runtime_data" : [],
       "primitives" : [
@@ -9238,7 +9238,7 @@
       ]
     },
     {
-      "name" : "qlearning384",
+      "name" : "qlearning385",
       "id" : 15,
       "runtime_data" : [],
       "primitives" : [
@@ -9289,7 +9289,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 384,
+            "line" : 385,
             "column" : 12,
             "source_fragment" : "hdr.q_header.egress_port = 7w0 ++ standard_metadata.egress_port"
           }
@@ -9308,7 +9308,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 385,
+            "line" : 386,
             "column" : 12,
             "source_fragment" : "hdr.q_header.ingress_global_timestamp = standard_metadata.ingress_global_timestamp"
           }
@@ -9316,7 +9316,7 @@
       ]
     },
     {
-      "name" : "qlearning388",
+      "name" : "qlearning389",
       "id" : 16,
       "runtime_data" : [],
       "primitives" : [
@@ -9330,7 +9330,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 388,
+            "line" : 389,
             "column" : 12,
             "source_fragment" : "hdr.q_header.setValid()"
           }
@@ -9382,7 +9382,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 390,
+            "line" : 391,
             "column" : 12,
             "source_fragment" : "hdr.q_header.egress_port = 7w0 ++ standard_metadata.egress_port"
           }
@@ -9401,7 +9401,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 391,
+            "line" : 392,
             "column" : 12,
             "source_fragment" : "hdr.q_header.ingress_global_timestamp = standard_metadata.ingress_global_timestamp"
           }
@@ -9420,7 +9420,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 392,
+            "line" : 393,
             "column" : 12,
             "source_fragment" : "hdr.q_header.q_value = 0"
           }
@@ -9462,7 +9462,7 @@
           ],
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 393,
+            "line" : 394,
             "column" : 12,
             "source_fragment" : "hdr.ipv4.totalLen = hdr.ipv4.totalLen + 14"
           }
@@ -9498,14 +9498,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [8],
+          "action_ids" : [9],
           "actions" : ["qlearning164"],
           "base_default_next" : "MyIngress.qlearning_active_ports",
           "next_tables" : {
             "qlearning164" : "MyIngress.qlearning_active_ports"
           },
           "default_entry" : {
-            "action_id" : 8,
+            "action_id" : 9,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -9534,7 +9534,7 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [7, 3, 1],
+          "action_ids" : [8, 4, 1],
           "actions" : ["MyIngress.get_active_port", "MyIngress.ipv4_forward", "NoAction"],
           "base_default_next" : "node_4",
           "next_tables" : {
@@ -9565,14 +9565,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [9],
+          "action_ids" : [10],
           "actions" : ["qlearning341"],
           "base_default_next" : null,
           "next_tables" : {
             "qlearning341" : null
           },
           "default_entry" : {
-            "action_id" : 9,
+            "action_id" : 10,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -9601,7 +9601,7 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [2, 4, 0, 5],
+          "action_ids" : [3, 5, 0, 6],
           "actions" : ["MyIngress.ipv4_forward", "MyIngress.drop", "NoAction", "MyIngress.minimum_delay_forward"],
           "base_default_next" : "tbl_qlearning351",
           "next_tables" : {
@@ -9633,25 +9633,54 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [10],
+          "action_ids" : [11],
           "actions" : ["qlearning351"],
-          "base_default_next" : null,
+          "base_default_next" : "tbl_ipv4_clone",
           "next_tables" : {
-            "qlearning351" : null
+            "qlearning351" : "tbl_ipv4_clone"
           },
           "default_entry" : {
-            "action_id" : 10,
+            "action_id" : 11,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
           }
         },
         {
-          "name" : "tbl_qlearning354",
+          "name" : "tbl_ipv4_clone",
           "id" : 5,
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 354,
+            "line" : 353,
+            "column" : 12,
+            "source_fragment" : "ipv4_clone()"
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [2],
+          "actions" : ["MyIngress.ipv4_clone"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "MyIngress.ipv4_clone" : null
+          },
+          "default_entry" : {
+            "action_id" : 2,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_qlearning355",
+          "id" : 6,
+          "source_info" : {
+            "filename" : "qlearning.p4",
+            "line" : 355,
             "column" : 30,
             "source_fragment" : "="
           },
@@ -9662,14 +9691,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [11],
-          "actions" : ["qlearning354"],
+          "action_ids" : [12],
+          "actions" : ["qlearning355"],
           "base_default_next" : "tbl_minimum_delay_forward",
           "next_tables" : {
-            "qlearning354" : "tbl_minimum_delay_forward"
+            "qlearning355" : "tbl_minimum_delay_forward"
           },
           "default_entry" : {
-            "action_id" : 11,
+            "action_id" : 12,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -9677,10 +9706,10 @@
         },
         {
           "name" : "tbl_minimum_delay_forward",
-          "id" : 6,
+          "id" : 7,
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 355,
+            "line" : 356,
             "column" : 12,
             "source_fragment" : "minimum_delay_forward()"
           },
@@ -9691,25 +9720,25 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [6],
+          "action_ids" : [7],
           "actions" : ["MyIngress.minimum_delay_forward"],
           "base_default_next" : null,
           "next_tables" : {
             "MyIngress.minimum_delay_forward" : null
           },
           "default_entry" : {
-            "action_id" : 6,
+            "action_id" : 7,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
           }
         },
         {
-          "name" : "tbl_qlearning357",
-          "id" : 7,
+          "name" : "tbl_qlearning358",
+          "id" : 8,
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 357,
+            "line" : 358,
             "column" : 12,
             "source_fragment" : "mark_to_drop(standard_metadata)"
           },
@@ -9720,14 +9749,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [12],
-          "actions" : ["qlearning357"],
+          "action_ids" : [13],
+          "actions" : ["qlearning358"],
           "base_default_next" : null,
           "next_tables" : {
-            "qlearning357" : null
+            "qlearning358" : null
           },
           "default_entry" : {
-            "action_id" : 12,
+            "action_id" : 13,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -9780,14 +9809,14 @@
             }
           },
           "true_next" : "MyIngress.ipv4_qlearning",
-          "false_next" : "node_9"
+          "false_next" : "node_10"
         },
         {
-          "name" : "node_9",
+          "name" : "node_10",
           "id" : 2,
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 353,
+            "line" : 354,
             "column" : 18,
             "source_fragment" : "hdr.ipv4.isValid()"
           },
@@ -9802,8 +9831,8 @@
               }
             }
           },
-          "true_next" : "tbl_qlearning354",
-          "false_next" : "tbl_qlearning357"
+          "true_next" : "tbl_qlearning355",
+          "false_next" : "tbl_qlearning358"
         }
       ]
     },
@@ -9812,18 +9841,18 @@
       "id" : 1,
       "source_info" : {
         "filename" : "qlearning.p4",
-        "line" : 366,
+        "line" : 367,
         "column" : 8,
         "source_fragment" : "MyEgress"
       },
-      "init_table" : "node_15",
+      "init_table" : "node_16",
       "tables" : [
         {
-          "name" : "tbl_qlearning380",
-          "id" : 8,
+          "name" : "tbl_qlearning381",
+          "id" : 9,
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 380,
+            "line" : 381,
             "column" : 34,
             "source_fragment" : "="
           },
@@ -9835,10 +9864,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [14],
-          "actions" : ["qlearning380"],
+          "actions" : ["qlearning381"],
           "base_default_next" : null,
           "next_tables" : {
-            "qlearning380" : null
+            "qlearning381" : null
           },
           "default_entry" : {
             "action_id" : 14,
@@ -9848,40 +9877,11 @@
           }
         },
         {
-          "name" : "tbl_clone_e2e",
-          "id" : 9,
-          "source_info" : {
-            "filename" : "qlearning.p4",
-            "line" : 383,
-            "column" : 12,
-            "source_fragment" : "clone_e2e()"
-          },
-          "key" : [],
-          "match_type" : "exact",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [13],
-          "actions" : ["MyEgress.clone_e2e"],
-          "base_default_next" : "tbl_qlearning384",
-          "next_tables" : {
-            "MyEgress.clone_e2e" : "tbl_qlearning384"
-          },
-          "default_entry" : {
-            "action_id" : 13,
-            "action_const" : true,
-            "action_data" : [],
-            "action_entry_const" : true
-          }
-        },
-        {
-          "name" : "tbl_qlearning384",
+          "name" : "tbl_qlearning385",
           "id" : 10,
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 384,
+            "line" : 385,
             "column" : 37,
             "source_fragment" : "= 7w0 ++ standard_metadata.egress_port; ..."
           },
@@ -9893,10 +9893,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [15],
-          "actions" : ["qlearning384"],
+          "actions" : ["qlearning385"],
           "base_default_next" : null,
           "next_tables" : {
-            "qlearning384" : null
+            "qlearning385" : null
           },
           "default_entry" : {
             "action_id" : 15,
@@ -9906,11 +9906,11 @@
           }
         },
         {
-          "name" : "tbl_qlearning388",
+          "name" : "tbl_qlearning389",
           "id" : 11,
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 388,
+            "line" : 389,
             "column" : 12,
             "source_fragment" : "hdr.q_header.setValid(); ..."
           },
@@ -9922,10 +9922,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [16],
-          "actions" : ["qlearning388"],
+          "actions" : ["qlearning389"],
           "base_default_next" : null,
           "next_tables" : {
-            "qlearning388" : null
+            "qlearning389" : null
           },
           "default_entry" : {
             "action_id" : 16,
@@ -9938,13 +9938,13 @@
       "action_profiles" : [],
       "conditionals" : [
         {
-          "name" : "node_15",
+          "name" : "node_16",
           "id" : 3,
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 374,
+            "line" : 375,
             "column" : 12,
-            "source_fragment" : "standard_metadata.instance_type == PKT_INSTANCE_TYPE_EGRESS_CLONE"
+            "source_fragment" : "standard_metadata.instance_type == PKT_INSTANCE_TYPE_INGRESS_CLONE"
           },
           "expression" : {
             "type" : "expression",
@@ -9956,19 +9956,19 @@
               },
               "right" : {
                 "type" : "hexstr",
-                "value" : "0x00000002"
+                "value" : "0x00000001"
               }
             }
           },
-          "true_next" : "tbl_qlearning380",
-          "false_next" : "node_17"
+          "true_next" : "tbl_qlearning381",
+          "false_next" : "node_18"
         },
         {
-          "name" : "node_17",
+          "name" : "node_18",
           "id" : 4,
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 382,
+            "line" : 383,
             "column" : 17,
             "source_fragment" : "hdr.q_header.isValid()"
           },
@@ -9983,7 +9983,7 @@
               }
             }
           },
-          "true_next" : "tbl_clone_e2e",
+          "true_next" : "tbl_qlearning385",
           "false_next" : "node_20"
         },
         {
@@ -9991,7 +9991,7 @@
           "id" : 5,
           "source_info" : {
             "filename" : "qlearning.p4",
-            "line" : 387,
+            "line" : 388,
             "column" : 18,
             "source_fragment" : "hdr.ipv4.protocol == Q_PROTOCOL_SOURCE"
           },
@@ -10010,7 +10010,7 @@
             }
           },
           "false_next" : null,
-          "true_next" : "tbl_qlearning388"
+          "true_next" : "tbl_qlearning389"
         }
       ]
     }
@@ -10021,7 +10021,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "qlearning.p4",
-        "line" : 404,
+        "line" : 405,
         "column" : 1,
         "source_fragment" : "update_checksum( ..."
       },

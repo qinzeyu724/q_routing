@@ -21,7 +21,7 @@
         },
         "match": {
             "hdr.ipv4.dstAddr": [
-                "10.0.2.0",
+                "10.0.1.0",
                 24
             ]
         },
@@ -30,7 +30,7 @@
     {
         "table": "MyIngress.ipv4_qlearning",
         "match": {
-          "hdr.ipv4.dstAddr": ["10.0.2.0", 24]
+          "hdr.ipv4.dstAddr": ["10.0.1.0", 24]
         },
         "action_name": "MyIngress.minimum_delay_forward",
         "action_params": {

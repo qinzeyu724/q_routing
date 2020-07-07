@@ -47,6 +47,7 @@ header ipv4_t {
 }
 
 header q_learning_t {
+    bit<8> hops;
     // mark the egress port and the timestamp when the packet is enqueued.
     bit<16> egress_port;
     bit<48> ingress_global_timestamp;
@@ -55,6 +56,7 @@ header q_learning_t {
 }
 
 header q_back_t{
+    bit<8> hops;
     bit<16> egress_port;
     bit<48> ingress_global_timestamp;
     bit<48> q_value;
@@ -150,7 +152,25 @@ control MyIngress(inout headers hdr,
     bit<48> q_value_temp;
     bit<48> q_value_temp1;
     bit<48> q_value_temp2;
+    bit<48> q_value_temp3;
     bit<48> reward;
+    bit<8> hop_temp1;
+    bit<8> hop_temp2;
+    bit<8> hop_temp3;
+    bit<8> hop_temp4;
+    bit<8> hop_temp5;
+    bit<8> hop_temp6;
+    bit<8> hop_temp7;
+    bit<8> hop_temp8;
+    bit<48> q_back_temp1;
+    bit<48> q_back_temp2;
+    bit<48> q_back_temp3;
+    bit<48> q_back_temp4;
+    bit<48> q_back_temp5;
+    bit<48> q_back_temp6;
+    bit<48> q_back_temp7;
+    bit<48> q_back_temp8;
+
     
     // 对应8个端口
     bit<48> q1;
@@ -167,6 +187,9 @@ control MyIngress(inout headers hdr,
         clone(CloneType.I2E,(bit<32>)standard_metadata.ingress_port);
     }
     action ipv4_forward(macAddr_t dstAddr, egressSpec_t port) {
+        // hdr.q_header.setInvalid();
+        // hdr.ipv4.totalLen = hdr.ipv4.totalLen - 15;
+        // hdr.ipv4.protocol = UDP_PROTOCOL;
         standard_metadata.egress_spec = port;
         hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
         hdr.ethernet.dstAddr = dstAddr;
@@ -174,7 +197,7 @@ control MyIngress(inout headers hdr,
     }
     action read_q8(){
         q_value.read(q8,(bit<32>)8);
-        if(meta.active_port[0:0]==1){
+        if(meta.active_port[0:0]==1&& standard_metadata.ingress_port!=8){
             if(q8 < min_q){
                 min_q = q8;
                 min_port = 8;
@@ -184,7 +207,7 @@ control MyIngress(inout headers hdr,
     } 
     action read_q7(){
         q_value.read(q7,(bit<32>)7);
-        if(meta.active_port[1:1]==1){
+        if(meta.active_port[1:1]==1&& standard_metadata.ingress_port!=7){
             if(q7 < min_q){
                 min_q = q7;
                 min_port = 7;
@@ -194,7 +217,7 @@ control MyIngress(inout headers hdr,
     }
     action read_q6(){
         q_value.read(q6,(bit<32>)6);
-        if(meta.active_port[2:2]==1){
+        if(meta.active_port[2:2]==1&& standard_metadata.ingress_port!=6){
             if(q6 < min_q){
                 min_q = q6;
                 min_port = 6;
@@ -204,7 +227,7 @@ control MyIngress(inout headers hdr,
     }
     action read_q5(){
         q_value.read(q5,(bit<32>)5);
-        if(meta.active_port[3:3]==1){
+        if(meta.active_port[3:3]==1&& standard_metadata.ingress_port!=5){
             if(q5 < min_q){
                 min_q = q5;
                 min_port = 5;
@@ -214,7 +237,7 @@ control MyIngress(inout headers hdr,
     }
     action read_q4(){
         q_value.read(q4,(bit<32>)4);
-        if(meta.active_port[4:4]==1){
+        if(meta.active_port[4:4]==1&& standard_metadata.ingress_port!=4){
             if(q4 < min_q){
                 min_q = q4;
                 min_port = 4;
@@ -224,7 +247,7 @@ control MyIngress(inout headers hdr,
     }
     action read_q3(){
         q_value.read(q3,(bit<32>)3);
-        if(meta.active_port[5:5]==1){
+        if(meta.active_port[5:5]==1&& standard_metadata.ingress_port!=3){
             if(q3 < min_q){
                 min_q = q3;
                 min_port = 3;
@@ -234,7 +257,7 @@ control MyIngress(inout headers hdr,
     }
     action read_q2(){
         q_value.read(q2,(bit<32>)2);
-        if(meta.active_port[6:6]==1){
+        if(meta.active_port[6:6]==1&& standard_metadata.ingress_port!=2){
             if(q2 < min_q){
                 min_q = q2;
                 min_port = 2;
@@ -245,12 +268,39 @@ control MyIngress(inout headers hdr,
     action read_q1(){
         q_value.read(q1,(bit<32>)1);
         if(meta.active_port[7:7]==1){
-            if(q1 < min_q){
+            if(q1 < min_q && standard_metadata.ingress_port!=1){
                 min_q = q1;
                 min_port = 1;
             }
         }
         read_q2();
+    }
+    action read_hops(){
+        if(hdr.q_back.hops[7:7]==1){
+            hop_temp8 = 8;
+        }
+        if(hdr.q_back.hops[6:6]==1){
+            hop_temp7 = 7;
+        }
+        if(hdr.q_back.hops[5:5]==1){
+            hop_temp6 = 6;
+        }
+        if(hdr.q_back.hops[4:4]==1){
+            hop_temp5 = 5;
+        }
+        if(hdr.q_back.hops[3:3]==1){
+            hop_temp4 = 4;
+        }
+        if(hdr.q_back.hops[2:2]==1){
+            hop_temp3 = 3;
+        }
+        if(hdr.q_back.hops[1:1]==1){
+            hop_temp2 = 2;
+        }
+        if(hdr.q_back.hops[0:0]==1){
+            hop_temp1 = 1;
+        }
+        
     }
     action drop() {
         mark_to_drop(standard_metadata);
@@ -258,28 +308,28 @@ control MyIngress(inout headers hdr,
     action minimum_delay_forward(){
         packet_count.read(count_temp,(bit<32>)0);
         read_q1();
-        if(count_temp == 1 && meta.active_port[7:7]==1){
+        if(count_temp == 1 && meta.active_port[7:7]==1 && standard_metadata.ingress_port!=1){
             standard_metadata.egress_spec = 9w1;
             meta.q_value = q1;
-        }else if(count_temp == 2 && meta.active_port[6:6]==1){
+        }else if(count_temp == 2 && meta.active_port[6:6]==1 && standard_metadata.ingress_port!=2){
             standard_metadata.egress_spec = 9w2;
             meta.q_value = q2;
-        }else if(count_temp == 3 && meta.active_port[5:5]==1){
+        }else if(count_temp == 3 && meta.active_port[5:5]==1 && standard_metadata.ingress_port!=3){
             standard_metadata.egress_spec = 9w3;
             meta.q_value = q3;
-        }else if(count_temp == 4 && meta.active_port[4:4]==1){
+        }else if(count_temp == 4 && meta.active_port[4:4]==1&& standard_metadata.ingress_port!=4){
             standard_metadata.egress_spec = 9w4;
             meta.q_value = q4;
-        }else if(count_temp == 5 && meta.active_port[3:3]==1){
+        }else if(count_temp == 5 && meta.active_port[3:3]==1&& standard_metadata.ingress_port!=5){
             standard_metadata.egress_spec = 9w5;
             meta.q_value = q5;
-        }else if(count_temp == 6 && meta.active_port[2:2]==1){
+        }else if(count_temp == 6 && meta.active_port[2:2]==1&& standard_metadata.ingress_port!=6){
             standard_metadata.egress_spec = 9w6;
             meta.q_value = q6;
-        }else if(count_temp == 7 && meta.active_port[1:1]==1){
+        }else if(count_temp == 7 && meta.active_port[1:1]==1&& standard_metadata.ingress_port!=7){
             standard_metadata.egress_spec = 9w7;
             meta.q_value = q7;
-        }else if(count_temp == 8 && meta.active_port[0:0]==1){
+        }else if(count_temp == 8 && meta.active_port[0:0]==1&& standard_metadata.ingress_port!=8){
             standard_metadata.egress_spec = 9w8;
             meta.q_value = q8;
         }else{
@@ -304,7 +354,7 @@ control MyIngress(inout headers hdr,
             minimum_delay_forward;
         }
         size = 1024;
-        default_action = NoAction();
+        default_action = drop();
     }
     action get_active_port(port_number_t port_number){
         meta.active_port = port_number;
@@ -336,12 +386,57 @@ control MyIngress(inout headers hdr,
             reward = standard_metadata.ingress_global_timestamp - hdr.q_back.ingress_global_timestamp;
             // 除以2,相当于单程delay
             reward = reward >> 1;
-            reward = reward + hdr.q_back.q_value;
+            /*
+            if(hdr.q_back.hops[0:0]==1){
+                q_back_temp1 = hdr.q_back.q_value << 1;
+            }else{
+                q_back_temp1 = 0;
+            }
+            if(hdr.q_back.hops[1:1]==1){
+                q_back_temp2 = hdr.q_back.q_value << 2;
+            }else{
+                q_back_temp2 = 0;
+            }
+            if(hdr.q_back.hops[2:2]==1){
+                q_back_temp3 = hdr.q_back.q_value << 3;
+            }else{
+                q_back_temp3 = 0;
+            }
+            if(hdr.q_back.hops[3:3]==1){
+                q_back_temp4 = hdr.q_back.q_value << 4;
+            }else{
+                q_back_temp4 = 0;
+            }
+            if(hdr.q_back.hops[4:4]==1){
+                q_back_temp5 = hdr.q_back.q_value << 5;
+            }else{
+                q_back_temp5 = 0;
+            }
+            if(hdr.q_back.hops[5:5]==1){
+                q_back_temp6 = hdr.q_back.q_value << 6;
+            }else{
+                q_back_temp6 = 0;
+            }
+            if(hdr.q_back.hops[6:6]==1){
+                q_back_temp7 = hdr.q_back.q_value << 7;
+            }else{
+                q_back_temp7 = 0;
+            }
+            if(hdr.q_back.hops[7:7]==1){
+                q_back_temp8 = hdr.q_back.q_value << 8;
+            }else{
+                q_back_temp8 = 0;
+            }
+            */
+            // q_value_temp3 = q_back_temp1 + q_back_temp2+q_back_temp3+q_back_temp4;
+            q_value_temp3 = hdr.q_header.q_value >> 4;
+            reward = reward + q_value_temp3;
             reward = reward >> 2;
             q_value.read(q_value_temp,(bit<32>)hdr.q_header.egress_port);
             q_value_temp1 = q_value_temp >> 1;
             q_value_temp2 = q_value_temp >> 2;
             q_value_temp = q_value_temp1 + q_value_temp2 + reward;
+            // q_value_temp = q_value_temp2 + reward;
             q_value.write((bit<32>)hdr.q_header.egress_port,q_value_temp);
             mark_to_drop(standard_metadata);
         }
@@ -351,7 +446,7 @@ control MyIngress(inout headers hdr,
             hdr.q_header.q_value = meta. q_value;
             // hdr.q_header.q_value = 48w3;
             ipv4_clone();
-        }else if (hdr.ipv4.isValid()){
+        }else if (hdr.ipv4.isValid() && hdr.ipv4.protocol == UDP_PROTOCOL){
             hdr.ipv4.protocol = Q_PROTOCOL_SOURCE;
             minimum_delay_forward();
         }else{
@@ -373,25 +468,20 @@ control MyEgress(inout headers hdr,
 
     apply {
         if (standard_metadata.instance_type == PKT_INSTANCE_TYPE_INGRESS_CLONE){
-                // 将q_header更改为q_back
-                // hdr.q_back.setValid();
-                // hdr.q_back.egress_port = hdr.q_header.egress_port;
-                // hdr.q_back.ingress_global_timestamp = hdr.q_header.ingress_global_timestamp;
-                // hdr.q_back.q_value = hdr.q_header.q_value;
                 hdr.ipv4.protocol = Q_PROTOCOL_BACK;
+                hdr.q_header.hops = hdr.q_header.hops+1;
                 // hdr.q_header.setInvalid();
         }else if(hdr.q_header.isValid()){
-            // clone_e2e();
             hdr.q_header.egress_port = 7w0 ++ standard_metadata.egress_port;
             hdr.q_header.ingress_global_timestamp = standard_metadata.ingress_global_timestamp;
-            // hdr.q_header.q_value = 0;    
+            hdr.q_header.hops = hdr.q_header.hops+1;
         }else if (hdr.ipv4.protocol == Q_PROTOCOL_SOURCE){
             hdr.q_header.setValid();
             // could also be egress_spec
             hdr.q_header.egress_port = 7w0 ++ standard_metadata.egress_port;
             hdr.q_header.ingress_global_timestamp = standard_metadata.ingress_global_timestamp;
             hdr.q_header.q_value = 0;
-            hdr.ipv4.totalLen = hdr.ipv4.totalLen + 14;
+            hdr.ipv4.totalLen = hdr.ipv4.totalLen + 15;
         }
     }
 }

@@ -69,6 +69,7 @@ struct q_flag_metadata_t{
 struct metadata {
      bit<8> active_port;
      bit<48> q_value;
+     bit<8> hops;
 }
 
 struct headers {
@@ -190,6 +191,7 @@ control MyIngress(inout headers hdr,
         // hdr.q_header.setInvalid();
         // hdr.ipv4.totalLen = hdr.ipv4.totalLen - 15;
         // hdr.ipv4.protocol = UDP_PROTOCOL;
+        hdr.q_header.hops = 0;
         standard_metadata.egress_spec = port;
         hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
         hdr.ethernet.dstAddr = dstAddr;
@@ -386,50 +388,50 @@ control MyIngress(inout headers hdr,
             reward = standard_metadata.ingress_global_timestamp - hdr.q_back.ingress_global_timestamp;
             // 除以2,相当于单程delay
             reward = reward >> 1;
-            /*
+            
             if(hdr.q_back.hops[0:0]==1){
-                q_back_temp1 = hdr.q_back.q_value << 1;
+                q_back_temp1 = reward << 1;
             }else{
                 q_back_temp1 = 0;
             }
             if(hdr.q_back.hops[1:1]==1){
-                q_back_temp2 = hdr.q_back.q_value << 2;
+                q_back_temp2 = reward << 2;
             }else{
                 q_back_temp2 = 0;
             }
             if(hdr.q_back.hops[2:2]==1){
-                q_back_temp3 = hdr.q_back.q_value << 3;
+                q_back_temp3 = reward << 3;
             }else{
                 q_back_temp3 = 0;
             }
             if(hdr.q_back.hops[3:3]==1){
-                q_back_temp4 = hdr.q_back.q_value << 4;
+                q_back_temp4 = reward << 4;
             }else{
                 q_back_temp4 = 0;
             }
             if(hdr.q_back.hops[4:4]==1){
-                q_back_temp5 = hdr.q_back.q_value << 5;
+                q_back_temp5 = reward << 5;
             }else{
                 q_back_temp5 = 0;
             }
             if(hdr.q_back.hops[5:5]==1){
-                q_back_temp6 = hdr.q_back.q_value << 6;
+                q_back_temp6 = reward << 6;
             }else{
                 q_back_temp6 = 0;
             }
             if(hdr.q_back.hops[6:6]==1){
-                q_back_temp7 = hdr.q_back.q_value << 7;
+                q_back_temp7 = reward << 7;
             }else{
                 q_back_temp7 = 0;
             }
             if(hdr.q_back.hops[7:7]==1){
-                q_back_temp8 = hdr.q_back.q_value << 8;
+                q_back_temp8 = reward << 8;
             }else{
                 q_back_temp8 = 0;
             }
-            */
+            
             // q_value_temp3 = q_back_temp1 + q_back_temp2+q_back_temp3+q_back_temp4;
-            q_value_temp3 = hdr.q_header.q_value >> 4;
+            q_value_temp3 = (hdr.q_header.q_value >> 1) + q_back_temp1 + q_back_temp2 + q_back_temp3 + q_back_temp4 + q_back_temp5 + q_back_temp6 + q_back_temp7 + q_back_temp8;
             reward = reward + q_value_temp3;
             reward = reward >> 2;
             q_value.read(q_value_temp,(bit<32>)hdr.q_header.egress_port);
@@ -442,6 +444,7 @@ control MyIngress(inout headers hdr,
         }
         else if (hdr.q_header.isValid()) {
             // 假如这个包头中q_header已经存在
+            meta.hops = hdr.q_header.hops;
             ipv4_qlearning.apply();
             hdr.q_header.q_value = meta. q_value;
             // hdr.q_header.q_value = 48w3;
@@ -474,7 +477,7 @@ control MyEgress(inout headers hdr,
         }else if(hdr.q_header.isValid()){
             hdr.q_header.egress_port = 7w0 ++ standard_metadata.egress_port;
             hdr.q_header.ingress_global_timestamp = standard_metadata.ingress_global_timestamp;
-            hdr.q_header.hops = hdr.q_header.hops+1;
+            hdr.q_header.hops = meta.hops+1;
         }else if (hdr.ipv4.protocol == Q_PROTOCOL_SOURCE){
             hdr.q_header.setValid();
             // could also be egress_spec

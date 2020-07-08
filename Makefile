@@ -7,6 +7,8 @@ PCAP_DIR = pcaps
 LOG_DIR = logs
 
 TOPO = topology.json
+LOOPTOPO = loop_topology.json
+RANDTOPO = random_topology.json
 P4C = p4c-bm2-ss
 RUN_SCRIPT = ../../utils/run_exercise.py
 
@@ -29,6 +31,12 @@ all: run
 
 run: 
 	sudo python $(RUN_SCRIPT) -t $(TOPO) $(run_args)
+
+run_loop:
+	sudo python $(RUN_SCRIPT) -t $(LOOPTOPO) $(run_args)
+
+run_rand:
+	sudo python $(RUN_SCRIPT) -t $(RANDTOPO) $(run_args)
 
 stop:
 	sudo mn -c

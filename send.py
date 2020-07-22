@@ -12,7 +12,7 @@ from scapy.all import Ether, IP, UDP
 from scapy.all import IntField, FieldListField, FieldLenField, ShortField, PacketListField
 from scapy.layers.inet import _IPOption_HDR
 
-from time import sleep
+from time import sleep,time
 
 def get_if():
     ifs=get_if_list()
@@ -55,18 +55,18 @@ def main():
     addr = socket.gethostbyname(sys.argv[1])
     iface = get_if()
 
-    pkt = Ether(src=get_if_hwaddr(iface), dst="ff:ff:ff:ff:ff:ff") / IP(
-        dst=addr) / UDP(
-            dport=4321, sport=1234) / sys.argv[2]
 
  #   pkt = Ether(src=get_if_hwaddr(iface), dst="ff:ff:ff:ff:ff:ff") / IP(
  #       dst=addr, options = IPOption_MRI(count=2,
  #           swtraces=[SwitchTrace(swid=0,qdepth=0), SwitchTrace(swid=1,qdepth=0)])) / UDP(
  #           dport=4321, sport=1234) / sys.argv[2]
-    pkt.show2()
+    # pkt.show2()
     #hexdump(pkt)
     try:
       for i in range(int(sys.argv[3])):
+        current_time = str(int(float(time())*1000000))
+        pkt = Ether(src=get_if_hwaddr(iface), dst="ff:ff:ff:ff:ff:ff") / IP(dst=addr) / UDP(dport=4321, sport=1234) / current_time
+        pkt.show2()
         sendp(pkt, iface=iface)
         sleep(0.1)
     except KeyboardInterrupt:

@@ -10,6 +10,8 @@ from scapy.fields import *
 from scapy.layers.inet import _IPOption_HDR
 import numpy as np
 
+from time import time
+
 def get_if():
     ifs=get_if_list()
     iface=None
@@ -49,43 +51,40 @@ class qlearning(Packet):
 bind_layers(IP,qlearning,proto = 143)
 bind_layers(qlearning,UDP)
 class packet_handle:
-    def __init__(self,iface,fo):
-        self.q_hops = []
+    def __init__(self,iface):
+        self.q_time = []
         self.iface = iface
-        self.fo = fo
         self.packet_count = 0
     def handle_pkt(self, pkt):
         if pkt.haslayer(qlearning):
-            q = pkt.getlayer(qlearning)
             ip = pkt.getlayer(IP)
-            if ip.src == "10.0.1.1" and ip.dst == "10.0.2.2":
-                if len(self.q_hops) < 100:
-                    self.q_hops.append(q.hops)
+            if ip.src == "10.0.2.2" and ip.dst == "10.0.1.1":
+                self.packet_count += 1
+                q = pkt.getlayer(qlearning)
+                current_time = int(float(time())*1000000)
+                # print(pkt.getlayer(Raw))
+                previous = int(str(pkt.getlayer(Raw)))
+                rtt = current_time-previous
+                if len(self.q_time) < 100:
+                    self.q_time.append(rtt)
                 else:
-                    print(np.mean(self.q_hops))
-                    self.fo.write(str(np.mean(self.q_hops)))
-                    self.fo.write('\n')
-                    self.q_hops = []
-                    self.q_hops.append(q.hops)
-                return_pkt = Ether(src=get_if_hwaddr(self.iface), dst="ff:ff:ff:ff:ff:ff") / IP(dst=pkt.getlayer(IP).src) / UDP(dport=4321, sport=1234) / pkt.getlayer(Raw)
-                return_pkt.show2()
-                sendp(return_pkt, iface=self.iface)
-                self.packet_count +=1
+                    print(np.mean(self.q_time))
+                    # print(self.packet_count)
+                    self.q_time = []
+                    self.q_time.append(rtt)
         sys.stdout.flush()
 
 
 def main():
     try:
         iface = 'eth0'
-        fo = open('hops.txt',"wb")
-        ph = packet_handle(iface,fo)
+        ph = packet_handle(iface)
         print "sniffing on %s" % iface
         sys.stdout.flush()
         packetlist = sniff(iface = iface,prn = ph.handle_pkt)
-    except KeyboardInterrupt:
+    except expression as identifier:
         raise
     finally:
-        fo.close()
         print(ph.packet_count)
 if __name__ == '__main__':
     main()

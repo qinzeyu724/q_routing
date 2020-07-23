@@ -9,6 +9,7 @@ LOG_DIR = logs
 TOPO = topology.json
 LOOPTOPO = loop_topology.json
 RANDTOPO = random_topology.json
+EASYTOPO = easy_topology.json
 P4C = p4c-bm2-ss
 RUN_SCRIPT = ../../utils/run_exercise.py
 
@@ -37,6 +38,9 @@ run_loop:
 
 run_rand:
 	sudo python $(RUN_SCRIPT) -t $(RANDTOPO) $(run_args)
+
+run_easy:
+	sudo python $(RUN_SCRIPT) -t $(EASYTOPO) $(run_args)
 
 stop:
 	sudo mn -c

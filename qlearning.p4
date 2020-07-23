@@ -458,7 +458,7 @@ control MyIngress(inout headers hdr,
             }
             
             // q_value_temp3 = q_back_temp1 + q_back_temp2+q_back_temp3+q_back_temp4;
-            q_value_temp3 = (hdr.q_back.q_value >> 1) +(hdr.q_back.q_value>>2) + (hdr.q_back.q_value>>3) + q_back_temp1 + q_back_temp2 + q_back_temp3 + q_back_temp4 + q_back_temp5 + q_back_temp6 + q_back_temp7 + q_back_temp8;
+            q_value_temp3 = (hdr.q_back.q_value >> 1)+ (hdr.q_back.q_value >> 2)+ (hdr.q_back.q_value >> 3) + q_back_temp1 + q_back_temp2 + q_back_temp3 + q_back_temp4 + q_back_temp5 + q_back_temp6 + q_back_temp7 + q_back_temp8;
             reward = reward + q_value_temp3;
             reward = reward >> 2;
             hash(hash_temp, HashAlgorithm.crc16, (bit<32>)0, {hdr.ipv4.dstAddr,(bit<32>)hdr.q_back.egress_port},(bit<32>)q_value_entries);

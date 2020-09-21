@@ -11,5 +11,4 @@
 - 没有考虑hash值冲突的情况
 - 对比实验没有完善
 
-代码放在tutorial/exercise文件夹下，执行时与exercise的步骤相同
-p4c-bm2-ss --p4v 16 --p4runtime-files build/qlearning.p4.p4info.txt -o build/qlearning.json qlearning.p4
+代码放在tutorial/exercise文件夹下，执行时与exercise的步骤相同，修改代码后需要重新编译，p4c-bm2-ss --p4v 16 --p4runtime-files build/qlearning.p4.p4info.txt -o build/qlearning.json qlearning.p4（目前q_learning_source.p4、q_learning_transit.p4、q_learning_sink.p4都没有用到）

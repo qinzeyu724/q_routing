@@ -1,13 +1,15 @@
 # Q_routing
 ## qlearning_transit.p4
-需要实现的功能有：
-- 收到数据包之后，根据目的ip地址寻找最近路径（计划使用crc16算法定位寄存器）
-- 往ingress port 返回一个数据包，带自己这边的q_value值
-- 在收到返回的数据包之后，更新自己这边的q_value
+目前已经实现的功能有：
 
-现在我感觉不如把寄存器的位置在控制平面进行设置，这样可以少好多次crc计算
+- 根据Q值查找最优路径
+- 根据返回的clone packet更新Q值
 
+还需要完善的功能有：
 
-p4c-bm2-ss --p4v 16 --p4runtime-files build/qlearning_source.p4.p4info.txt -o build/qlearning_source.json qlearning_source.p4
-p4c-bm2-ss --p4v 16 --p4runtime-files build/qlearning_transit.p4.p4info.txt -o build/qlearning_transit.json qlearning_transit.p4
+- bmv2中没有生成包的功能，需要自己写一个extern
+- 没有考虑hash值冲突的情况
+- 对比实验没有完善
+
+代码放在tutorial/exercise文件夹下，执行时与exercise的步骤相同
 p4c-bm2-ss --p4v 16 --p4runtime-files build/qlearning.p4.p4info.txt -o build/qlearning.json qlearning.p4

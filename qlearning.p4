@@ -146,10 +146,14 @@ control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
     
-    register<bit<48>>(q_value_entries) q_value;
+    register<bit<48>>(q_value_entries * 2) q_value;
+    register<bit<32>>(q_value_entries) ip_table;
     register<bit<4>>(1) packet_count;
     register<bit<16>>(16) port_count;
     register<bit<1>>(8) port_active_test;
+    bit<32> ip_temp;
+    bit<48> r1;
+    bit<48> r2;
     bit<4> count_temp;
     bit<4> count_temp2;
     bit<16> count_temp3;
@@ -221,7 +225,14 @@ control MyIngress(inout headers hdr,
         hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
     }
     action read_q8(){
-        q_value.read(q8,hash8);
+        ip_table.read(ip_temp, hash8);
+        ip_table.read(ip_temp, hash8);
+        q_value.read(r1, hash8);
+        q_value.read(r2, hash8 + q_value_entries);
+        if (ip_temp != (bit<32>)0 && ip_temp != hdr.ipv4.dstAddr)
+            q8 = r2;
+        else
+            q8 = r1;
         if(meta.active_port[0:0]==1&& standard_metadata.ingress_port!=8){
             if(q8 < min_q){
                 min_q = q8;
@@ -231,7 +242,13 @@ control MyIngress(inout headers hdr,
         meta.q_value = min_q;
     }
     action read_q7(){
-        q_value.read(q7,hash7);
+        ip_table.read(ip_temp, hash7);
+        q_value.read(r1, hash7);
+        q_value.read(r2, hash7 + q_value_entries);
+        if (ip_temp != (bit<32>)0 && ip_temp != hdr.ipv4.dstAddr)
+            q7 = r2;
+        else
+            q7 = r1;
         if(meta.active_port[1:1]==1&& standard_metadata.ingress_port!=7){
             if(q7 < min_q){
                 min_q = q7;
@@ -241,7 +258,13 @@ control MyIngress(inout headers hdr,
         read_q8();
     }
     action read_q6(){
-        q_value.read(q6,hash6);
+        ip_table.read(ip_temp, hash6);
+        q_value.read(r1, hash6);
+        q_value.read(r2, hash6 + q_value_entries);
+        if (ip_temp != (bit<32>)0 && ip_temp != hdr.ipv4.dstAddr)
+            q6 = r2;
+        else
+            q6 = r1;
         if(meta.active_port[2:2]==1&& standard_metadata.ingress_port!=6){
             if(q6 < min_q){
                 min_q = q6;
@@ -251,7 +274,13 @@ control MyIngress(inout headers hdr,
         read_q7();
     }
     action read_q5(){
-        q_value.read(q5,hash5);
+        ip_table.read(ip_temp, hash5);
+        q_value.read(r1, hash5);
+        q_value.read(r2, hash5 + q_value_entries);
+        if (ip_temp != (bit<32>)0 && ip_temp != hdr.ipv4.dstAddr)
+            q5 = r2;
+        else
+            q5 = r1;
         if(meta.active_port[3:3]==1&& standard_metadata.ingress_port!=5){
             if(q5 < min_q){
                 min_q = q5;
@@ -261,7 +290,13 @@ control MyIngress(inout headers hdr,
         read_q6();
     }
     action read_q4(){
-        q_value.read(q4,hash4);
+        ip_table.read(ip_temp, hash4);
+        q_value.read(r1, hash4);
+        q_value.read(r2, hash4 + q_value_entries);
+        if (ip_temp != (bit<32>)0 && ip_temp != hdr.ipv4.dstAddr)
+            q4 = r2;
+        else
+            q4 = r1;
         if(meta.active_port[4:4]==1&& standard_metadata.ingress_port!=4){
             if(q4 < min_q){
                 min_q = q4;
@@ -272,7 +307,13 @@ control MyIngress(inout headers hdr,
     }
     action read_q3(){
         // q_value.read(q3,(bit<32>)3);
-        q_value.read(q3,hash3);
+        ip_table.read(ip_temp, hash3);
+        q_value.read(r1, hash3);
+        q_value.read(r2, hash3 + q_value_entries);
+        if (ip_temp != (bit<32>)0 && ip_temp != hdr.ipv4.dstAddr)
+            q3 = r2;
+        else
+            q3 = r1;
         if(meta.active_port[5:5]==1&& standard_metadata.ingress_port!=3){
             if(q3 < min_q){
                 min_q = q3;
@@ -283,7 +324,13 @@ control MyIngress(inout headers hdr,
     }
     action read_q2(){
         // q_value.read(q2,(bit<32>)2);
-        q_value.read(q2,hash2);
+        ip_table.read(ip_temp, hash2);
+        q_value.read(r1, hash2);
+        q_value.read(r2, hash2 + q_value_entries);
+        if (ip_temp != (bit<32>)0 && ip_temp != hdr.ipv4.dstAddr)
+            q2 = r2;
+        else
+            q2 = r1;
         if(meta.active_port[6:6]==1&& standard_metadata.ingress_port!=2){
             if(q2 < min_q){
                 min_q = q2;
@@ -294,7 +341,13 @@ control MyIngress(inout headers hdr,
     }
     action read_q1(){
         // q_value.read(q1,(bit<32>)1);
-        q_value.read(q1,hash1);
+        ip_table.read(ip_temp, hash1);
+        q_value.read(r1, hash1);
+        q_value.read(r2, hash1 + q_value_entries);
+        if (ip_temp != (bit<32>)0 && ip_temp != hdr.ipv4.dstAddr)
+            q1 = r2;
+        else
+            q1 = r1;
         if(meta.active_port[7:7]==1){
             if(q1 < min_q && standard_metadata.ingress_port!=1){
                 min_q = q1;
@@ -462,12 +515,21 @@ control MyIngress(inout headers hdr,
             reward = reward + q_value_temp3;
             reward = reward >> 2;
             hash(hash_temp, HashAlgorithm.crc16, (bit<32>)0, {hdr.ipv4.dstAddr,(bit<32>)hdr.q_back.egress_port},(bit<32>)q_value_entries);
-            q_value.read(q_value_temp,hash_temp);
+            ip_table.read(ip_temp, hash_temp);
+            if (ip_temp != (bit<32>)0 && ip_temp != hdr.ipv4.dstAddr)
+                q_value.read(q_value_temp,hash_temp + q_value_entries);
+            else
+                q_value.read(q_value_temp,hash_temp);
             q_value_temp1 = q_value_temp >> 1;
             q_value_temp2 = q_value_temp >> 2;
             q_value_temp = q_value_temp1 + q_value_temp2 + reward;
             // q_value_temp = q_value_temp2 + reward;
-            q_value.write(hash_temp,q_value_temp);
+            if (ip_temp != (bit<32>)0 && ip_temp != hdr.ipv4.dstAddr)
+                q_value.write(hash_temp + q_value_entries, q_value_temp);
+            else
+                q_value.write(hash_temp, q_value_temp);
+            if (ip_temp == (bit<32>)0)
+                ip_table.write(ip_temp, hdr.ipv4.dstAddr);
             mark_to_drop(standard_metadata);
         }
         else if (hdr.q_header.isValid()) {
